@@ -1,0 +1,1219 @@
+{
+	"info": {
+		"_postman_id": "2200b1d9-e7b5-4c11-a7ed-2ca7b6863d90",
+		"name": "FlyNext API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41671091",
+		"_collection_link": "https://csc309-pp1-2210.postman.co/workspace/CSC309-PP1-Workspace~71e7af70-a239-4710-a6f1-b99b81fac9d8/collection/41766696-2200b1d9-e7b5-4c11-a7ed-2ca7b6863d90?action=share&source=collection_link&creator=41671091"
+	},
+	"item": [
+		{
+			"name": "Hotel Management and Search",
+			"item": [
+				{
+					"name": "Create Hotel",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNWM4MmVkYy1jYzAyLTQ5MjQtOTczMS04NWQ3NDc4NWMyNGYiLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0MTY2NTcyMiwiZXhwIjoxNzQxNzUyMTIyfQ.gfBXyd-dsY1Q5tGIPON9vJtc5C0xL9MYNdGaoWeSHbI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Example Hotel\",\r\n  \"logo\": \"https://example.com/logo.png\",\r\n  \"address\": \"123 Example Street\",\r\n  \"location\": \"Mississauga, ON\",\r\n  \"city\": \"Mississauga\",\r\n  \"starRating\": 5,\r\n  \"images\": [\r\n    \"https://example.com/image1.jpg\",\r\n    \"https://example.com/image2.jpg\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/hotels",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"hotels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search and Filter Hotels",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/hotels?checkIn=2025-03-15&checkOut=2025-03-22&city=Toronto&name=Example Hotel&starRating=5&priceRange=200-300",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"hotels"
+							],
+							"query": [
+								{
+									"key": "checkIn",
+									"value": "2025-03-15"
+								},
+								{
+									"key": "checkOut",
+									"value": "2025-03-22"
+								},
+								{
+									"key": "city",
+									"value": "Toronto"
+								},
+								{
+									"key": "name",
+									"value": "Example Hotel"
+								},
+								{
+									"key": "starRating",
+									"value": "5"
+								},
+								{
+									"key": "priceRange",
+									"value": "200-300"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Hotel Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/hotels/[id]",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"hotels",
+								"[id]"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Define Room Types",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNWM4MmVkYy1jYzAyLTQ5MjQtOTczMS04NWQ3NDc4NWMyNGYiLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0MTY2NTcyMiwiZXhwIjoxNzQxNzUyMTIyfQ.gfBXyd-dsY1Q5tGIPON9vJtc5C0xL9MYNdGaoWeSHbI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Deluxe Suite\",\r\n  \"amenities\": [\"Wi-Fi\", \"Air Conditioning\", \"Flat-screen TV\", \"Mini Bar\", \"Jacuzzi\"],\r\n  \"pricePerNight\": 250.00,\r\n  \"images\": [\r\n    \"https://example.com/images/room1.jpg\",\r\n    \"https://example.com/images/room2.jpg\",\r\n    \"https://example.com/images/room3.jpg\"\r\n  ],\r\n  \"availableRooms\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/hotels/[id]/rooms",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"hotels",
+								"[id]",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Number of Available Rooms",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNWM4MmVkYy1jYzAyLTQ5MjQtOTczMS04NWQ3NDc4NWMyNGYiLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0MTY2NTcyMiwiZXhwIjoxNzQxNzUyMTIyfQ.gfBXyd-dsY1Q5tGIPON9vJtc5C0xL9MYNdGaoWeSHbI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"availableRooms\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/hotels/[id]/rooms",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"hotels",
+								"[id]",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View and Filter Hotel Bookings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNWM4MmVkYy1jYzAyLTQ5MjQtOTczMS04NWQ3NDc4NWMyNGYiLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0MTY2NTcyMiwiZXhwIjoxNzQxNzUyMTIyfQ.gfBXyd-dsY1Q5tGIPON9vJtc5C0xL9MYNdGaoWeSHbI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/hotels/[id]/bookings?date=2025-03-02&roomType=Deluxe Suite",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"hotels",
+								"[id]",
+								"bookings"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2025-03-02"
+								},
+								{
+									"key": "roomType",
+									"value": "Deluxe Suite"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Hotel Booking",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNWM4MmVkYy1jYzAyLTQ5MjQtOTczMS04NWQ3NDc4NWMyNGYiLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0MTY2NTcyMiwiZXhwIjoxNzQxNzUyMTIyfQ.gfBXyd-dsY1Q5tGIPON9vJtc5C0xL9MYNdGaoWeSHbI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"bookingId\": \"abc123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/hotels/[id]/bookings",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"hotels",
+								"[id]",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Room Availability",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNWM4MmVkYy1jYzAyLTQ5MjQtOTczMS04NWQ3NDc4NWMyNGYiLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0MTY2NTcyMiwiZXhwIjoxNzQxNzUyMTIyfQ.gfBXyd-dsY1Q5tGIPON9vJtc5C0xL9MYNdGaoWeSHbI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/hotels/[id]/availability?startDate=2025-03-15&endDate=2025-03-20",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"hotels",
+								"[id]",
+								"availability"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-03-15"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-03-20"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "Create Notification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Booking Confirmed\",\r\n    \"uid\": \"cfc718bc-87c0-4290-8b52-04ce4da9b253\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"notifications"
+							]
+						},
+						"description": "Creates notification for a user"
+					},
+					"response": [
+						{
+							"name": "Create Notification",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"message\": \"Booking Confirmed\",\r\n    \"uid\": \"cfc718bc-87c0-4290-8b52-04ce4da9b253\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/notifications",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"notifications"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "vary",
+									"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 11 Mar 2025 17:29:58 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"1bc5482a-73f8-470f-92d7-cc5b988fa750\",\n    \"message\": \"Booking Confirmed\",\n    \"isRead\": false,\n    \"createdAt\": \"2025-03-11T17:29:58.904Z\",\n    \"userId\": \"cfc718bc-87c0-4290-8b52-04ce4da9b253\"\n}"
+						}
+					]
+				},
+				{
+					"name": "View Unread Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/notifications?uid=cfc718bc-87c0-4290-8b52-04ce4da9b253",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"notifications"
+							],
+							"query": [
+								{
+									"key": "uid",
+									"value": "cfc718bc-87c0-4290-8b52-04ce4da9b253",
+									"description": "The id of the user whose notifications we would like to retrieve"
+								}
+							]
+						},
+						"description": "Get all notifications for a user, along with their unread notification count"
+					},
+					"response": [
+						{
+							"name": "View Unread Notifications",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/notifications?uid=cfc718bc-87c0-4290-8b52-04ce4da9b253",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"notifications"
+									],
+									"query": [
+										{
+											"key": "uid",
+											"value": "cfc718bc-87c0-4290-8b52-04ce4da9b253",
+											"description": "The id of the user whose notifications we would like to retrieve"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "vary",
+									"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 11 Mar 2025 23:49:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"notifications\": [\n        {\n            \"id\": \"1bc5482a-73f8-470f-92d7-cc5b988fa750\",\n            \"message\": \"Booking Confirmed\",\n            \"isRead\": true,\n            \"createdAt\": \"2025-03-11T17:29:58.904Z\",\n            \"userId\": \"cfc718bc-87c0-4290-8b52-04ce4da9b253\"\n        },\n        {\n            \"id\": \"7d75a977-6632-47dd-83c8-a3eaa58cb225\",\n            \"message\": \"Booking Confirmed\",\n            \"isRead\": false,\n            \"createdAt\": \"2025-03-11T23:09:08.393Z\",\n            \"userId\": \"cfc718bc-87c0-4290-8b52-04ce4da9b253\"\n        }\n    ],\n    \"unreadCount\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Updating Notifications",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1bc5482a-73f8-470f-92d7-cc5b988fa750\",\r\n    \"isRead\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"notifications"
+							]
+						},
+						"description": "Updates the read status of a notification"
+					},
+					"response": [
+						{
+							"name": "Updating Notifications",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"1bc5482a-73f8-470f-92d7-cc5b988fa750\",\r\n    \"isRead\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/notifications",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"notifications"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "vary",
+									"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 12 Mar 2025 00:08:00 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"1bc5482a-73f8-470f-92d7-cc5b988fa750\",\n    \"message\": \"Booking Confirmed\",\n    \"isRead\": false,\n    \"createdAt\": \"2025-03-11T17:29:58.904Z\",\n    \"userId\": \"cfc718bc-87c0-4290-8b52-04ce4da9b253\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Methods to create, update, and retrieve notifications for a user in the fly next backend"
+		},
+		{
+			"name": "Flights",
+			"item": [
+				{
+					"name": "Flight Search one-way",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"origin\":\"Toronto\",\r\n\"destination\": \"Zurich\",\r\n\"date\":[\"2024-12-25\"],\r\n\"type\":\"one-way\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/flights",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"flights"
+							]
+						},
+						"description": "Search for one-way flights"
+					},
+					"response": [
+						{
+							"name": "Flight Search one-way",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"origin\":\"Toronto\",\r\n\"destination\": \"Zurich\",\r\n\"date\":[\"2024-12-25\"],\r\n\"type\":\"one-way\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/flights",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"flights"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "vary",
+									"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 12 Mar 2025 00:09:23 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    [\n        {\n            \"legs\": 2,\n            \"flights\": [\n                {\n                    \"id\": \"29c1e1c1-7775-4e17-8c8e-e89dac424ed0\",\n                    \"flightNumber\": \"AC281\",\n                    \"departureTime\": \"2024-12-25T12:15:00.000Z\",\n                    \"arrivalTime\": \"2024-12-25T23:25:00.000Z\",\n                    \"originId\": \"370d2633-ba94-47f5-a735-513c0e332224\",\n                    \"destinationId\": \"64848eb5-ba4e-4e82-a6c0-641f378e140b\",\n                    \"duration\": 670,\n                    \"price\": 1461,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 81,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"AC\",\n                        \"name\": \"Air Canada\"\n                    },\n                    \"origin\": {\n                        \"code\": \"YYZ\",\n                        \"name\": \"Toronto Pearson International Airport\",\n                        \"city\": \"Toronto\",\n                        \"country\": \"Canada\"\n                    },\n                    \"destination\": {\n                        \"code\": \"LHR\",\n                        \"name\": \"Heathrow Airport\",\n                        \"city\": \"London\",\n                        \"country\": \"United Kingdom\"\n                    }\n                },\n                {\n                    \"id\": \"d7c963ca-b224-477e-95d5-c80546e55116\",\n                    \"flightNumber\": \"VS5001\",\n                    \"departureTime\": \"2024-12-26T09:35:00.000Z\",\n                    \"arrivalTime\": \"2024-12-26T20:50:00.000Z\",\n                    \"originId\": \"64848eb5-ba4e-4e82-a6c0-641f378e140b\",\n                    \"destinationId\": \"2bcb7925-96aa-4de8-9ec1-3622e954c0b6\",\n                    \"duration\": 675,\n                    \"price\": 1219,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 114,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"VS\",\n                        \"name\": \"Virgin Atlantic\"\n                    },\n                    \"origin\": {\n                        \"code\": \"LHR\",\n                        \"name\": \"Heathrow Airport\",\n                        \"city\": \"London\",\n                        \"country\": \"United Kingdom\"\n                    },\n                    \"destination\": {\n                        \"code\": \"ZRH\",\n                        \"name\": \"Zurich Airport\",\n                        \"city\": \"Zurich\",\n                        \"country\": \"Switzerland\"\n                    }\n                }\n            ]\n        },\n        {\n            \"legs\": 2,\n            \"flights\": [\n                {\n                    \"id\": \"29c1e1c1-7775-4e17-8c8e-e89dac424ed0\",\n                    \"flightNumber\": \"AC281\",\n                    \"departureTime\": \"2024-12-25T12:15:00.000Z\",\n                    \"arrivalTime\": \"2024-12-25T23:25:00.000Z\",\n                    \"originId\": \"370d2633-ba94-47f5-a735-513c0e332224\",\n                    \"destinationId\": \"64848eb5-ba4e-4e82-a6c0-641f378e140b\",\n                    \"duration\": 670,\n                    \"price\": 1461,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 81,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"AC\",\n                        \"name\": \"Air Canada\"\n                    },\n                    \"origin\": {\n                        \"code\": \"YYZ\",\n                        \"name\": \"Toronto Pearson International Airport\",\n                        \"city\": \"Toronto\",\n                        \"country\": \"Canada\"\n                    },\n                    \"destination\": {\n                        \"code\": \"LHR\",\n                        \"name\": \"Heathrow Airport\",\n                        \"city\": \"London\",\n                        \"country\": \"United Kingdom\"\n                    }\n                },\n                {\n                    \"id\": \"6be33767-3b0b-474a-82c5-39ba52a5bdb2\",\n                    \"flightNumber\": \"BA1698\",\n                    \"departureTime\": \"2024-12-26T12:10:00.000Z\",\n                    \"arrivalTime\": \"2024-12-26T23:45:00.000Z\",\n                    \"originId\": \"64848eb5-ba4e-4e82-a6c0-641f378e140b\",\n                    \"destinationId\": \"2bcb7925-96aa-4de8-9ec1-3622e954c0b6\",\n                    \"duration\": 695,\n                    \"price\": 1779,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 170,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"BA\",\n                        \"name\": \"British Airways\"\n                    },\n                    \"origin\": {\n                        \"code\": \"LHR\",\n                        \"name\": \"Heathrow Airport\",\n                        \"city\": \"London\",\n                        \"country\": \"United Kingdom\"\n                    },\n                    \"destination\": {\n                        \"code\": \"ZRH\",\n                        \"name\": \"Zurich Airport\",\n                        \"city\": \"Zurich\",\n                        \"country\": \"Switzerland\"\n                    }\n                }\n            ]\n        }\n    ]\n]"
+						}
+					]
+				},
+				{
+					"name": "Flight Search round trip",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"origin\":\"Toronto\",\r\n\"destination\": \"Zurich\",\r\n\"date\":[\"2024-11-14\", \"2024-12-25\"],\r\n\"type\":\"round\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/flights",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"flights"
+							]
+						},
+						"description": "Search for round trip flights"
+					},
+					"response": [
+						{
+							"name": "Flight Search round trip",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"origin\":\"Toronto\",\r\n\"destination\": \"Zurich\",\r\n\"date\":[\"2024-11-14\", \"2024-12-25\"],\r\n\"type\":\"round\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/flights",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"flights"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "vary",
+									"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 12 Mar 2025 00:09:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    [\n        {\n            \"legs\": 2,\n            \"flights\": [\n                {\n                    \"id\": \"046c6a43-5b1c-4021-adec-ea8d8e59b970\",\n                    \"flightNumber\": \"AC3858\",\n                    \"departureTime\": \"2024-11-14T03:40:00.000Z\",\n                    \"arrivalTime\": \"2024-11-14T11:35:00.000Z\",\n                    \"originId\": \"370d2633-ba94-47f5-a735-513c0e332224\",\n                    \"destinationId\": \"7f90354e-d083-48c7-a241-2b83ac4ec36d\",\n                    \"duration\": 475,\n                    \"price\": 1505,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 98,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"AC\",\n                        \"name\": \"Air Canada\"\n                    },\n                    \"origin\": {\n                        \"code\": \"YYZ\",\n                        \"name\": \"Toronto Pearson International Airport\",\n                        \"city\": \"Toronto\",\n                        \"country\": \"Canada\"\n                    },\n                    \"destination\": {\n                        \"code\": \"HNL\",\n                        \"name\": \"Daniel K. Inouye International Airport\",\n                        \"city\": \"Honolulu\",\n                        \"country\": \"United States\"\n                    }\n                },\n                {\n                    \"id\": \"e8c7f2ce-1010-4aca-84d4-799e4e578e1f\",\n                    \"flightNumber\": \"HA3885\",\n                    \"departureTime\": \"2024-11-15T16:55:00.000Z\",\n                    \"arrivalTime\": \"2024-11-16T05:00:00.000Z\",\n                    \"originId\": \"7f90354e-d083-48c7-a241-2b83ac4ec36d\",\n                    \"destinationId\": \"2bcb7925-96aa-4de8-9ec1-3622e954c0b6\",\n                    \"duration\": 725,\n                    \"price\": 1613,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 218,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"HA\",\n                        \"name\": \"Hawaiian Airlines\"\n                    },\n                    \"origin\": {\n                        \"code\": \"HNL\",\n                        \"name\": \"Daniel K. Inouye International Airport\",\n                        \"city\": \"Honolulu\",\n                        \"country\": \"United States\"\n                    },\n                    \"destination\": {\n                        \"code\": \"ZRH\",\n                        \"name\": \"Zurich Airport\",\n                        \"city\": \"Zurich\",\n                        \"country\": \"Switzerland\"\n                    }\n                }\n            ]\n        }\n    ],\n    [\n        {\n            \"legs\": 2,\n            \"flights\": [\n                {\n                    \"id\": \"38af5cac-b842-4f10-a074-af918cfa15ab\",\n                    \"flightNumber\": \"LX2913\",\n                    \"departureTime\": \"2024-12-25T13:20:00.000Z\",\n                    \"arrivalTime\": \"2024-12-25T18:30:00.000Z\",\n                    \"originId\": \"2bcb7925-96aa-4de8-9ec1-3622e954c0b6\",\n                    \"destinationId\": \"0273a7e5-8c10-46e9-99d7-12b7f65cdc20\",\n                    \"duration\": 310,\n                    \"price\": 1809,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 248,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"LX\",\n                        \"name\": \"Swiss International Air Lines\"\n                    },\n                    \"origin\": {\n                        \"code\": \"ZRH\",\n                        \"name\": \"Zurich Airport\",\n                        \"city\": \"Zurich\",\n                        \"country\": \"Switzerland\"\n                    },\n                    \"destination\": {\n                        \"code\": \"SGN\",\n                        \"name\": \"Tan Son Nhat International Airport\",\n                        \"city\": \"Ho Chi Minh City\",\n                        \"country\": \"Vietnam\"\n                    }\n                },\n                {\n                    \"id\": \"e8697062-cb0d-4d65-9030-8f4e75355f4f\",\n                    \"flightNumber\": \"VN2780\",\n                    \"departureTime\": \"2024-12-26T10:35:00.000Z\",\n                    \"arrivalTime\": \"2024-12-26T21:25:00.000Z\",\n                    \"originId\": \"0273a7e5-8c10-46e9-99d7-12b7f65cdc20\",\n                    \"destinationId\": \"b4183787-d9e7-4c29-939d-1cc1cfc72b19\",\n                    \"duration\": 650,\n                    \"price\": 1129,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 190,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"VN\",\n                        \"name\": \"Vietnam Airlines\"\n                    },\n                    \"origin\": {\n                        \"code\": \"SGN\",\n                        \"name\": \"Tan Son Nhat International Airport\",\n                        \"city\": \"Ho Chi Minh City\",\n                        \"country\": \"Vietnam\"\n                    },\n                    \"destination\": {\n                        \"code\": \"YTZ\",\n                        \"name\": \"Billy Bishop Toronto City Airport\",\n                        \"city\": \"Toronto\",\n                        \"country\": \"Canada\"\n                    }\n                }\n            ]\n        },\n        {\n            \"legs\": 2,\n            \"flights\": [\n                {\n                    \"id\": \"64ea1baf-5eca-4c85-9e32-fef6c2f0e95a\",\n                    \"flightNumber\": \"LX3125\",\n                    \"departureTime\": \"2024-12-25T20:35:00.000Z\",\n                    \"arrivalTime\": \"2024-12-26T05:00:00.000Z\",\n                    \"originId\": \"2bcb7925-96aa-4de8-9ec1-3622e954c0b6\",\n                    \"destinationId\": \"7ec62a84-f3de-4817-8314-bdbdc9d3ced9\",\n                    \"duration\": 505,\n                    \"price\": 657,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 125,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"LX\",\n                        \"name\": \"Swiss International Air Lines\"\n                    },\n                    \"origin\": {\n                        \"code\": \"ZRH\",\n                        \"name\": \"Zurich Airport\",\n                        \"city\": \"Zurich\",\n                        \"country\": \"Switzerland\"\n                    },\n                    \"destination\": {\n                        \"code\": \"MEX\",\n                        \"name\": \"Mexico City International Airport\",\n                        \"city\": \"Mexico City\",\n                        \"country\": \"Mexico\"\n                    }\n                },\n                {\n                    \"id\": \"e8bbed42-fab3-4c13-a2ab-fcd7237defd6\",\n                    \"flightNumber\": \"AM4626\",\n                    \"departureTime\": \"2024-12-26T17:05:00.000Z\",\n                    \"arrivalTime\": \"2024-12-27T06:15:00.000Z\",\n                    \"originId\": \"7ec62a84-f3de-4817-8314-bdbdc9d3ced9\",\n                    \"destinationId\": \"b4183787-d9e7-4c29-939d-1cc1cfc72b19\",\n                    \"duration\": 790,\n                    \"price\": 1014,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 187,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"AM\",\n                        \"name\": \"Aeroméxico\"\n                    },\n                    \"origin\": {\n                        \"code\": \"MEX\",\n                        \"name\": \"Mexico City International Airport\",\n                        \"city\": \"Mexico City\",\n                        \"country\": \"Mexico\"\n                    },\n                    \"destination\": {\n                        \"code\": \"YTZ\",\n                        \"name\": \"Billy Bishop Toronto City Airport\",\n                        \"city\": \"Toronto\",\n                        \"country\": \"Canada\"\n                    }\n                }\n            ]\n        },\n        {\n            \"legs\": 2,\n            \"flights\": [\n                {\n                    \"id\": \"e894eb8b-5966-42c3-94bd-8f8bf5a82be4\",\n                    \"flightNumber\": \"LX2780\",\n                    \"departureTime\": \"2024-12-25T07:05:00.000Z\",\n                    \"arrivalTime\": \"2024-12-25T19:55:00.000Z\",\n                    \"originId\": \"2bcb7925-96aa-4de8-9ec1-3622e954c0b6\",\n                    \"destinationId\": \"d1febfc6-d951-41b8-b07e-6e5e4ef144f9\",\n                    \"duration\": 770,\n                    \"price\": 1848,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 202,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"LX\",\n                        \"name\": \"Swiss International Air Lines\"\n                    },\n                    \"origin\": {\n                        \"code\": \"ZRH\",\n                        \"name\": \"Zurich Airport\",\n                        \"city\": \"Zurich\",\n                        \"country\": \"Switzerland\"\n                    },\n                    \"destination\": {\n                        \"code\": \"SYD\",\n                        \"name\": \"Sydney Kingsford Smith Airport\",\n                        \"city\": \"Sydney\",\n                        \"country\": \"Australia\"\n                    }\n                },\n                {\n                    \"id\": \"a046cbad-2eb0-4481-a67a-4d3e47a152d3\",\n                    \"flightNumber\": \"QF5247\",\n                    \"departureTime\": \"2024-12-26T11:10:00.000Z\",\n                    \"arrivalTime\": \"2024-12-26T23:45:00.000Z\",\n                    \"originId\": \"d1febfc6-d951-41b8-b07e-6e5e4ef144f9\",\n                    \"destinationId\": \"370d2633-ba94-47f5-a735-513c0e332224\",\n                    \"duration\": 755,\n                    \"price\": 850,\n                    \"currency\": \"CAD\",\n                    \"availableSeats\": 239,\n                    \"status\": \"SCHEDULED\",\n                    \"airline\": {\n                        \"code\": \"QF\",\n                        \"name\": \"Qantas\"\n                    },\n                    \"origin\": {\n                        \"code\": \"SYD\",\n                        \"name\": \"Sydney Kingsford Smith Airport\",\n                        \"city\": \"Sydney\",\n                        \"country\": \"Australia\"\n                    },\n                    \"destination\": {\n                        \"code\": \"YYZ\",\n                        \"name\": \"Toronto Pearson International Airport\",\n                        \"city\": \"Toronto\",\n                        \"country\": \"Canada\"\n                    }\n                }\n            ]\n        }\n    ]\n]"
+						}
+					]
+				}
+			],
+			"description": "Demonstrates the variations of the flight search for fly next, which requires an origin, destination corresponding to an airport or city. Requires two validate dates for round trip and one for one way, formatted 'YYYY-MM-DD'."
+		},
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "itinerary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flightIds\": [\n    \"b83fea74-01cd-418e-b09d-c761f8206573\"\n  ],\n    \"passportNumber\": \"123239934\",\n    \"checkIn\": \"2025-03-11\",\n    \"checkOut\": \"2025-03-21\",\n    \"roomTypeId\": \"ba342ec4-f557-4b0f-b78e-93fa19e4e7d5\",\n    \"hotelId\": \"edbb90fb-2266-45bf-bc17-80c629b62e85\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/booking/itinerary",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"booking",
+								"itinerary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookingId\":\"83a993f8-834b-4104-b5ad-9c4c4a2b7c09\",\n    \"flightBookingId\": \"3e8d2fd2-993c-4387-bf20-65edb076df8c\",\n    \"hotelBookingId\": \"2581ac90-63ba-4eee-9872-d823a9f7bbb6\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/booking/cancel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"booking",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invoice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookingId\":\"83a993f8-834b-4104-b5ad-9c4c4a2b7c09\",\n    \"flightBookingId\": \"3e8d2fd2-993c-4387-bf20-65edb076df8c\",\n    \"hotelBookingId\": \"2581ac90-63ba-4eee-9872-d823a9f7bbb6\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/booking/invoice/87724364-f2a2-4019-ae84-05b6dc1df853",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"booking",
+								"invoice",
+								"87724364-f2a2-4019-ae84-05b6dc1df853"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flightId\": \"b83fea74-01cd-418e-b09d-c761f8206573\",\n    \"passportNumber\": \"123239934\",\n    \"checkIn\": \"2025-03-11\",\n    \"checkOut\": \"2025-03-21\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/booking/verify",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"booking",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "checkout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookingId\":\"83a993f8-834b-4104-b5ad-9c4c4a2b7c09\",\n    \"cardNumber\": \"12445567889978\",\n    \"expiry\": \"11/27\",\n    \"nameOnCard\": \"Jane Doe\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/booking/checkout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"booking",
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Can create, cancel, and verify flight and/or hotel bookings. Needs booking IDs for cancellation and verification."
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"securePassword123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"123-456-7890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"securePassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/auth/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"profilePicture\": \"https://cdn.pixabay.com/photo/2025/03/09/10/20/sunrise-9456877_640.jpg\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"123-456-7890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Uses JWT tokens for authentication and stores user ID to validate throughout the app."
+		},
+		{
+			"name": "booking",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NDc0NTk1YS0yMDA2LTQyMzMtYTk5Ny1kOWMyMGY4YWJhOWYiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDE3NDE3MTcsImV4cCI6MTc0MTgyODExN30.Ea9IPqFWRBxwYWxopZbYJqGdaggcRQNkrQzxZzjRZ-Q",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/booking/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"booking",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
