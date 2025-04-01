@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = "file:./dev.db"
 }
 
@@ -55,8 +55,8 @@ model User {
 
   // Relations
   notifications Notification[]
-  hotels        Hotel[]         // If the user is a HOTEL_OWNER, they can have multiple hotels
-  bookings      Booking[]       // Bookings made by the user
+  hotels        Hotel[] // If the user is a HOTEL_OWNER, they can have multiple hotels
+  bookings      Booking[] // Bookings made by the user
 }
 
 /**
@@ -65,40 +65,40 @@ model User {
  * -----------------------------
  */
 model Hotel {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   name       String
   logo       String?
   address    String
   city       String
-  location   String     // city, country
+  location   String // city, country
   starRating Float
-  images     Json 
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  images     Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   // Relations
-  ownerId   String
-  owner     User      @relation(fields: [ownerId], references: [id])
-  roomTypes RoomType[]
+  ownerId       String
+  owner         User           @relation(fields: [ownerId], references: [id])
+  roomTypes     RoomType[]
   // Bookings referencing the hotel directly are captured in HotelBooking
   hotelBookings HotelBooking[]
 }
 
 model RoomType {
-  id            String       @id @default(uuid())
-  name          String       // e.g., 'Twin', 'Double', 'Suite'
-  amenities     Json     // e.g., {'Wi-Fi', 'TV', 'Minibar'}
+  id            String   @id @default(uuid())
+  name          String // e.g., 'Twin', 'Double', 'Suite'
+  amenities     Json // e.g., {'Wi-Fi', 'TV', 'Minibar'}
   pricePerNight Decimal
   images        Json
-  totalRooms  Int
+  totalRooms    Int
   // schedule is a JSON column storing an array of "room schedules"
-  schedule    Json     // e.g. an array of objects, each with date->boolean map
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  schedule      Json // e.g. an array of objects, each with date->boolean map
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
-  hotelId    String
-  hotel      Hotel         @relation(fields: [hotelId], references: [id])
+  hotelId       String
+  hotel         Hotel          @relation(fields: [hotelId], references: [id])
   // For room bookings:
   hotelBookings HotelBooking[]
 }
@@ -107,57 +107,59 @@ model RoomType {
  * -----------------------------
  * BOOKINGS (ITINERARIES)
  * -----------------------------
- *
  * A "Booking" can be a container/itinerary for multiple flights and/or hotel rooms.
  * FlightBooking & HotelBooking are line items in the overall Booking.
  */
 model Booking {
-  id           String          @id @default(uuid())
-  status       BookingStatus   @default(PENDING)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  id        String        @id @default(uuid())
+  status    BookingStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  totalPrice    Decimal?       // Sum of flight + hotel price
+  totalPrice Decimal? // Sum of flight + hotel price
 
   // Link to user
-  userId  String
-  user    User       @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   // Relations
-  flightBookingId String? 
-  
+  flightBookingId String?
+  flightBookings  FlightBooking?
+
   hotelBookingId String?
+  hotelBookings  HotelBooking?
 }
 
 model FlightBooking {
-  id         String         @id @default(uuid())
-  status     BookingStatus  @default(PENDING)
-  reference  String         // e.g. external flight reference from AFS
-  price      Decimal
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id        String        @id @default(uuid())
+  status    BookingStatus @default(PENDING)
+  reference String // e.g. external flight reference from AFS
+  price     Decimal
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   // Relations
-  bookingId String          @unique
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
 
   flightId String?
 }
 
 model HotelBooking {
-  id         String         @id @default(uuid())
-  status     BookingStatus  @default(PENDING)
-  checkIn    DateTime
-  checkOut   DateTime
-  totalPrice Decimal
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id              String        @id @default(uuid())
+  status          BookingStatus @default(PENDING)
+  checkIn         DateTime
+  checkOut        DateTime
+  totalPrice      Decimal
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   roomIndexNumber Int?
 
   // Relations
-  bookingId String
+  bookingId String  @unique
   booking   Booking @relation(fields: [bookingId], references: [id])
 
-  hotelId String
+  hotelId String @unique
   hotel   Hotel  @relation(fields: [hotelId], references: [id])
 
   roomTypeId String
@@ -168,7 +170,6 @@ model HotelBooking {
  * -----------------------------
  * NOTIFICATIONS
  * -----------------------------
- *
  * Allows the system to store notifications for users and hotel owners
  * (e.g., booking confirmations, cancellations, etc.).
  */
@@ -180,20 +181,20 @@ model Notification {
 
   // Relations
   userId String
-  user   User     @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model City {
-  id   String @id @default(uuid())
-  city String @unique
-  country String
+  id       String    @id @default(uuid())
+  city     String    @unique
+  country  String
   airports Airport[]
 }
 
 model Airport {
-  id       String @id @default(uuid())
-  name     String
-  code     String @unique
-  cityId   String
-  city     City   @relation(fields: [cityId], references: [id])
+  id     String @id @default(uuid())
+  name   String
+  code   String @unique
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id])
 }
