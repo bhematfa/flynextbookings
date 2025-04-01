@@ -49,12 +49,12 @@ model User {
   lastName       String
   phoneNumber    String?
   profilePicture Bytes?
-  role           UserRole @default(USER)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  role           UserRole  @default(USER)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   // Relations
-  notifications Notification[]
+  notifications  Notification[]
   hotels        Hotel[] // If the user is a HOTEL_OWNER, they can have multiple hotels
   bookings      Booking[] // Bookings made by the user
 }
@@ -73,34 +73,34 @@ model Hotel {
   location   String // city, country
   starRating Float
   images     Json
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   // Relations
   ownerId       String
   owner         User           @relation(fields: [ownerId], references: [id])
   roomTypes     RoomType[]
   // Bookings referencing the hotel directly are captured in HotelBooking
-  hotelBookings HotelBooking[]
+  hotelBookings  HotelBooking[]
 }
 
 model RoomType {
   id            String   @id @default(uuid())
   name          String // e.g., 'Twin', 'Double', 'Suite'
   amenities     Json // e.g., {'Wi-Fi', 'TV', 'Minibar'}
-  pricePerNight Decimal
+  pricePerNight  Decimal
   images        Json
   totalRooms    Int
   // schedule is a JSON column storing an array of "room schedules"
   schedule      Json // e.g. an array of objects, each with date->boolean map
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // Relations
   hotelId       String
   hotel         Hotel          @relation(fields: [hotelId], references: [id])
   // For room bookings:
-  hotelBookings HotelBooking[]
+  hotelBookings  HotelBooking[]
 }
 
 /**
@@ -112,58 +112,58 @@ model RoomType {
  */
 model Booking {
   id        String        @id @default(uuid())
-  status    BookingStatus @default(PENDING)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  status    BookingStatus  @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   totalPrice Decimal? // Sum of flight + hotel price
 
   // Link to user
-  userId String
+  userId  String
   user   User   @relation(fields: [userId], references: [id])
 
   // Relations
-  flightBookingId String?
+  flightBookingId  String?
   flightBookings  FlightBooking?
 
-  hotelBookingId String?
+  hotelBookingId  String?
   hotelBookings  HotelBooking?
 }
 
 model FlightBooking {
   id        String        @id @default(uuid())
-  status    BookingStatus @default(PENDING)
-  reference String // e.g. external flight reference from AFS
+  status    BookingStatus  @default(PENDING)
+  reference  String // e.g. external flight reference from AFS
   price     Decimal
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   // Relations
-  bookingId String  @unique
-  booking   Booking @relation(fields: [bookingId], references: [id])
+  bookingId  String  @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id])
 
-  flightId String?
+  flightId  String?
 }
 
 model HotelBooking {
   id              String        @id @default(uuid())
-  status          BookingStatus @default(PENDING)
+  status          BookingStatus  @default(PENDING)
   checkIn         DateTime
   checkOut        DateTime
   totalPrice      Decimal
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  roomIndexNumber Int?
+  roomIndexNumber  Int?
 
   // Relations
-  bookingId String  @unique
-  booking   Booking @relation(fields: [bookingId], references: [id])
+  bookingId  String  @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id])
 
-  hotelId String @unique
+  hotelId  String  @unique
   hotel   Hotel  @relation(fields: [hotelId], references: [id])
 
-  roomTypeId String
-  roomType   RoomType @relation(fields: [roomTypeId], references: [id])
+  roomTypeId  String
+  roomType   RoomType  @relation(fields: [roomTypeId], references: [id])
 }
 
 /**
@@ -177,10 +177,10 @@ model Notification {
   id        String   @id @default(uuid())
   message   String
   isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
   // Relations
-  userId String
+  userId  String
   user   User   @relation(fields: [userId], references: [id])
 }
 
@@ -188,13 +188,13 @@ model City {
   id       String    @id @default(uuid())
   city     String    @unique
   country  String
-  airports Airport[]
+  airports  Airport[]
 }
 
 model Airport {
-  id     String @id @default(uuid())
+  id     String  @id @default(uuid())
   name   String
-  code   String @unique
-  cityId String
+  code   String  @unique
+  cityId  String
   city   City   @relation(fields: [cityId], references: [id])
 }
