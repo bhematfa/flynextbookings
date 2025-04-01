@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = "file:./dev.db"
 }
 
@@ -48,7 +48,7 @@ model User {
   firstName      String
   lastName       String
   phoneNumber    String?
-  profilePicture String?
+  profilePicture Bytes?
   role           UserRole @default(USER)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -90,7 +90,9 @@ model RoomType {
   amenities     Json     // e.g., {'Wi-Fi', 'TV', 'Minibar'}
   pricePerNight Decimal
   images        Json
-  availableRooms Int         
+  totalRooms  Int
+  // schedule is a JSON column storing an array of "room schedules"
+  schedule    Json     // e.g. an array of objects, each with date->boolean map
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
@@ -115,32 +117,28 @@ model Booking {
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
-  // Payment/Invoice details (Optional expansions)
-  invoicePdfUrl String?        // Link to a generated PDF invoice
   totalPrice    Decimal?       // Sum of flight + hotel price
 
-  // Relationship to user
+  // Link to user
   userId  String
   user    User       @relation(fields: [userId], references: [id])
 
-  // Each booking can have multiple flight & hotel items.
-  flightBookings FlightBooking[]
-  hotelBookings  HotelBooking[]
+  // Relations
+  flightBookingId String? 
+  
+  hotelBookingId String?
 }
 
 model FlightBooking {
   id         String         @id @default(uuid())
   status     BookingStatus  @default(PENDING)
-  reference  String
-  seatClass  SeatClass?
-  seatNumber String?
+  reference  String         // e.g. external flight reference from AFS
   price      Decimal
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
 
   // Relations
-  bookingId String
-  booking   Booking @relation(fields: [bookingId], references: [id])
+  bookingId String          @unique
 
   flightId String?
 }
@@ -153,6 +151,7 @@ model HotelBooking {
   totalPrice Decimal
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
+  roomIndexNumber Int?
 
   // Relations
   bookingId String
