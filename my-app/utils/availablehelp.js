@@ -100,4 +100,5 @@ export function setAvailability(
     schedule[roomIndex][dateStr] = availability;
     tempDate.setDate(tempDate.getDate() + 1);
   }
+  return schedule;
 }

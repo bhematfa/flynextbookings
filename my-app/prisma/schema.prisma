@@ -150,6 +150,9 @@ model HotelBooking {
   status          BookingStatus  @default(PENDING)
   checkIn         DateTime
   checkOut        DateTime
+  customerFirstName  String
+  customerLastName  String
+  customerEmail   String
   totalPrice      Decimal
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt

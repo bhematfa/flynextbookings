@@ -230,6 +230,9 @@ export async function POST(request) {
 
       hotelBooking = await prisma.hotelBooking.create({
         data: {
+          customerFirstName: user.firstName,
+          customerLastName: user.lastName,
+          customerEmail: user.email,
           checkIn: new Date(checkIn),
           checkOut: new Date(checkOut),
           status: "PENDING",
