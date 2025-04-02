@@ -84,7 +84,13 @@ export function isAvailable(schedule, checkIn, checkOut, roomIndex) {
   return isRoomFree;
 }
 
-export function setAvailability(schedule, checkIn, checkOut, roomIndex) {
+export function setAvailability(
+  schedule,
+  checkIn,
+  checkOut,
+  roomIndex,
+  availability
+) {
   const inDate = typeof checkIn === "string" ? new Date(checkIn) : checkIn;
   const outDate = typeof checkOut === "string" ? new Date(checkOut) : checkOut;
 
@@ -95,7 +101,7 @@ export function setAvailability(schedule, checkIn, checkOut, roomIndex) {
   const tempDate = new Date(inDate);
   for (let i = 0; i < numDays; i++) {
     const dateStr = tempDate.toISOString().split("T")[0];
-    schedule[roomIndex][dateStr] = false;
+    schedule[roomIndex][dateStr] = availability;
     tempDate.setDate(tempDate.getDate() + 1);
   }
 }
