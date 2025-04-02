@@ -15,6 +15,24 @@ export async function GET(request) {
     const localBookings = await prisma.booking.findMany({
       where: { userId: user.id },
     });
+    if (!localBookings) {
+      return NextResponse.json({ error: "No bookings found" }, { status: 404 });
+    }
+    for (let i = 0; i < localBookings.length; i++) {
+      let booking = localBookings[i];
+      if (booking.flightBookingId) {
+        let flightBooking = await prisma.flightBooking.findUnique({
+          where: { id: booking.flightBookingId },
+        });
+        localBookings[i].flightBooking = flightBooking;
+      }
+      if (booking.hotelBookingId) {
+        let hotelBooking = await prisma.hotelBooking.findUnique({
+          where: { id: booking.hotelBookingId },
+        });
+        localBookings[i].hotelBooking = hotelBooking;
+      }
+    }
 
     return NextResponse.json(localBookings);
   } catch (err) {
