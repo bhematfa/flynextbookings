@@ -6,6 +6,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { parseAndVerifyToken } from "@/utils/jwt";
+import { setAvailability } from "@/utils/availablehelp";
 
 async function cancelAFSFlight(bookingReference, lastName) {
   const url = "https://advanced-flights-system.replit.app/api/bookings/cancel";
@@ -59,7 +60,7 @@ export async function POST(request) {
     const requester = await prisma.user.findUnique({
       where: { id: user.userId },
     });
-    console.log("requester: ", requester);
+    //console.log("requester: ", requester);
     if (!requester) {
       return NextResponse.json({ error: "Wrong user" }, { status: 404 });
     }
@@ -136,6 +137,61 @@ export async function POST(request) {
           { status: 404 }
         );
       }
+      let roomType = await prisma.roomType.findUnique({
+        where: { id: hotelCancelRes.roomTypeId },
+      });
+      const hotel = await prisma.hotel.findUnique({
+        where: { id: hotelCancelRes.hotelId },
+      });
+      if (!roomType || !hotel) {
+        return NextResponse.json(
+          { error: "Room type or hotel not found" },
+          { status: 404 }
+        );
+      }
+      let newSchedule = await setAvailability(
+        roomType.schedule,
+        hotelCancelRes.checkIn,
+        hotelCancelRes.checkOut,
+        hotelCancelRes.roomIndexNumber,
+        true
+      );
+      roomType = await prisma.roomType.update({
+        where: { id: roomType.id },
+        data: { schedule: newSchedule },
+      });
+      if (!roomType) {
+        return NextResponse.json(
+          { error: "Room type update error" },
+          { status: 404 }
+        );
+      }
+      if (user.userId) {
+        const notifyRes = await fetch(notificationsUrl.toString(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `Your Hotel room booking # ${hotelBookingId} has been cancelled.`,
+            uid: user.userId,
+          }),
+        });
+        if (!notifyRes || notifyRes.error) {
+          return NextResponse.json({ error: notifyRes.error }, { status: 404 });
+        }
+      }
+      if (hotel.ownerId) {
+        const notifyRes = await fetch(notificationsUrl.toString(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `Hotel room booking # ${hotelBookingId} for room ${hotelCancelRes.roomIndexNumber} from ${hotelCancelRes.checkIn} to ${hotelCancelRes.checkOut} has been cancelled.`,
+            uid: hotel.ownerId,
+          }),
+        });
+        if (!notifyRes || notifyRes.error) {
+          return NextResponse.json({ error: notifyRes.error }, { status: 404 });
+        }
+      }
     }
 
     // overall booking cancellation
@@ -149,7 +205,7 @@ export async function POST(request) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: `Your Hotel room booking has been cancelled.`,
+            message: `Your booking # ${booking.id} has been completely cancelled.`,
             uid: user.userId,
           }),
         });
