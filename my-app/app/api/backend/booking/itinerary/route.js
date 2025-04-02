@@ -154,12 +154,12 @@ export async function POST(request) {
         console.log("Prisma error: ", err);
       }
       console.log("FLIGHT BOOKING: ", flightBooking);
-      if (!roomTypeId) {
-        newBooking = await prisma.booking.update({
-          where: { id: newBooking.id },
-          data: { status: "CONFIRMED" },
-        });
-      }
+      // if (!roomTypeId) {
+      //   newBooking = await prisma.booking.update({
+      //     where: { id: newBooking.id },
+      //     data: { status: "PENDING" },
+      //   });
+      // }
       const notifyRes = await fetch(notificationsUrl.toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
