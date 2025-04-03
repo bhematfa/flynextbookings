@@ -94,7 +94,7 @@ export async function POST(request, { params }) {
 //If availability decreases, it may require canceling some existing reservations.
 export async function PUT(request, { params }) {
   try {
-    const { availableRooms } = await request.json();
+    const { availableRooms, checkIn, checkOut } = await request.json();
     const { id } = await params;
 
     const userDec = await parseAndVerifyToken(request);
@@ -121,20 +121,49 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "Invalid Field" }, { status: 400 });
     }
 
-    const hotel = await prisma.hotel.findUnique({
+    const roomType = await prisma.roomType.findUnique({
       where: {
         id: id,
       },
     });
 
-    if (!hotel) {
+    if (!roomType) {
       return NextResponse.json({ error: "Hotel not found." }, { status: 404 });
     }
 
-    if (hotel.ownerId !== user.id) {
+    if (roomType.ownerId !== user.id) {
       return NextResponse.json(
         { error: "You are not authorized." },
         { status: 403 }
+      );
+    }
+    if (availableRooms > roomType.totalRooms) {
+      return NextResponse.json(
+        { error: "Available rooms cannot exceed total rooms." },
+        { status: 400 }
+      );
+    }
+
+    if (availableRooms < 0) {
+      return NextResponse.json(
+        { error: "Available rooms cannot be negative." },
+        { status: 400 }
+      );
+    }
+
+    let currentAvailableRooms = findAvailability(
+      roomType.schedule,
+      checkIn,
+      checkOut
+    );
+
+    if (currentAvailableRooms > availableRooms) {
+      return NextResponse.json(
+        {
+          message:
+            "current Available rooms already higher than requested availability.",
+        },
+        { status: 200 }
       );
     }
 
@@ -142,6 +171,36 @@ export async function PUT(request, { params }) {
       where: { roomTypeId: id },
       orderBy: { createdAt: "asc" },
     });
+    for (const booking of bookings) {
+      if (booking.status === "CANCELLED") {
+        continue;
+      }
+      if (
+        new Date(booking.checkIn) < new Date(checkOut) &&
+        new Date(checkOut) > new Date(booking.checkIn)
+      ) {
+        // se
+        setAvailability(
+          roomType.schedule,
+          booking.checkIn,
+          booking.checkOut,
+          booking.roomIndex,
+          (availability = true)
+        );
+        // notify user
+      }
+      currentAvailableRooms = findAvailability(
+        roomType.schedule,
+        checkIn,
+        checkOut
+      );
+      if (currentAvailableRooms == availableRooms) {
+        return NextResponse.json(
+          { message: "Current available rooms match requested availability." },
+          { status: 200 }
+        );
+      }
+    }
 
     const overbookedCount = bookings.length - availableRooms;
 
