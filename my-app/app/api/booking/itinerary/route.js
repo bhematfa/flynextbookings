@@ -21,8 +21,8 @@ async function bookAFSFlight(
   const res = await fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       "x-api-key": process.env.AFS_API_KEY,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       email,
@@ -32,7 +32,8 @@ async function bookAFSFlight(
       passportNumber,
     }),
   });
-  console.log("AFS fetch status:", res.status);
+  //console.log("AFS fetch status:", res.status);
+  //console.log("AFS fetch body:", await res.text());
   if (res.status == 400) {
     return res.json();
   }
@@ -117,28 +118,28 @@ export async function POST(request) {
         flightIds,
         passportNumber
       );
-      if (flightAFSBookRes?.error) {
-        let aFSmessage = flightAFSBookRes.error;
-        return NextResponse.json({ message: aFSmessage }, { status: 400 });
-      }
       if (!flightAFSBookRes) {
         return NextResponse.json(
           { error: "AFS Booking Error" },
           { status: 500 }
         );
       }
+      if (flightAFSBookRes?.error) {
+        let aFSmessage = flightAFSBookRes.error;
+        return NextResponse.json({ message: aFSmessage }, { status: 400 });
+      }
 
-      console.log("AFS booking: ", flightAFSBookRes);
+      //console.log("AFS booking: ", flightAFSBookRes);
 
       const totalFlightPrice = flightAFSBookRes.flights.reduce(
         (acc, f) => acc + f.price,
         0
       );
       totalBookingPrice += parseInt(totalFlightPrice, 10);
-      console.log("total price: ", typeof totalFlightPrice);
-      console.log(" ref: ", flightAFSBookRes.bookingReference);
-      console.log(" Booking ID: ", newBooking.id);
-      console.log(" status: ", flightAFSBookRes.status);
+      // console.log("total price: ", typeof totalFlightPrice);
+      // console.log(" ref: ", flightAFSBookRes.bookingReference);
+      // console.log(" Booking ID: ", newBooking.id);
+      // console.log(" status: ", flightAFSBookRes.status);
       const AFSflightId = flightAFSBookRes.flights[0].id;
       try {
         flightBooking = await prisma.flightBooking.create({
@@ -160,7 +161,7 @@ export async function POST(request) {
           { status: 500 }
         );
       }
-      console.log("FLIGHT BOOKING: ", flightBooking);
+      // console.log("FLIGHT BOOKING: ", flightBooking);
       flightBookingId = flightBooking.id;
       const notifyRes = await fetch(notificationsUrl.toString(), {
         method: "POST",
