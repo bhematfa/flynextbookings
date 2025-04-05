@@ -1,12 +1,13 @@
-// app/api/bookings/invoice/[bookingId]/route.js
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import PDFDocument from "pdfkit";
-import { Readable } from "stream";
-import { parseAndVerifyToken } from "@/utils/jwt";
+// app/api/booking/invoice/[bookingId]/route.js
+
 /*****************************************************
  * OpenAI. (2025). ChatGPT (Feb 06 version) [Large language model]. https://chatgpt.com
  *****************************************************/
+
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import puppeteer from "puppeteer";
+import { parseAndVerifyToken } from "@/utils/jwt";
 
 export async function POST(request) {
   try {
@@ -17,90 +18,103 @@ export async function POST(request) {
     }
 
     const { bookingId, hotelBookingId, flightBookingId } = body;
-    console.log(bookingId);
-
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
     });
-    console.log(booking);
+    if (!booking) {
+      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+    }
     if (booking.userId !== user.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    let hotelBooking;
-    let hotel;
-    let flightBooking;
+    let hotelBooking = null;
+    let flightBooking = null;
     if (hotelBookingId) {
       hotelBooking = await prisma.hotelBooking.findUnique({
         where: { id: hotelBookingId },
       });
-      console.log(hotelBooking);
       if (!hotelBooking) {
         return NextResponse.json(
-          { error: "Invalid HotelBooking ID" },
-          { status: 400 }
+          { error: "Hotel booking not found" },
+          { status: 404 }
         );
       }
-      hotel = await prisma.booking.findUnique({
-        where: { id: hotelBooking.hotelId },
-      });
-    }
-
-    if (!booking) {
-      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
     if (flightBookingId) {
       flightBooking = await prisma.flightBooking.findUnique({
         where: { id: flightBookingId },
       });
+      if (!flightBooking) {
+        return NextResponse.json(
+          { error: "Flight booking not found" },
+          { status: 404 }
+        );
+      }
     }
 
-    const doc = new PDFDocument({ margin: 50 });
-    let chunks = [];
-    const stream = doc.pipe(new Readable({ read() {} }));
-    stream.on("data", (chunk) => chunks.push(chunk));
-
-    // Header
-    doc.fontSize(20).text("Booking Invoice", { align: "center" });
-    doc.moveDown();
-
-    doc.fontSize(12).text(`Booking ID: ${booking.id}`);
-    doc.text(`Name: ${booking.firstName} ${booking.lastName}`);
-    doc.text(`Email: ${booking.email}`);
-    doc.text(`Status: ${booking.status}`);
-    doc.moveDown();
-
+    let htmlContent = `
+      <html>
+        <head><title>Invoice ${bookingId}</title></head>
+        <body>
+          <h1>Booking Invoice</h1>
+          <p><strong>Booking ID:</strong> ${booking.id}</p>
+          <p><strong>Status:</strong> ${booking.status}</p>
+          <p><strong>Customer Name:</strong> ${booking.customerName}</p>
+          <p><strong>Customer Email:</strong> ${booking.customerEmail}</p>
+          <p><strong>Booking Date:</strong> ${new Date(
+            booking.createdAt
+          ).toLocaleDateString()}</p>
+          <!-- Add flight/hotel details as needed -->
+        </body>
+      </html>
+    `;
     if (flightBooking) {
-      doc.text("Flight Bookings:");
-      doc.text(`- Reference Number: ${flightBooking.reference}`);
-      doc.text(`  Total: $${flightBooking.totalPrice}`);
-      doc.moveDown();
+      htmlContent += `
+        <h2>Flight Booking</h2>
+        <p><strong>Flight ID:</strong> ${flightBooking.id}</p>
+        <p><strong>Status:</strong> ${flightBooking.status}</p>
+      `;
     }
     if (hotelBooking) {
-      doc.text("Hotel Bookings:");
-      doc.text(`- Hotel: ${hotel.name}, City: ${hotel.location}`);
-      doc.text(
-        `  CheckIn: ${hotelBooking.checkIn}, CheckOut: ${hotelBooking.checkOut}`
-      );
-      doc.text(`  Total: $${hotelBooking.totalPrice}`);
-      doc.moveDown();
+      htmlContent += `
+        <h2>Hotel Booking</h2>
+        <p><strong>Hotel ID:</strong> ${hotelBooking.id}</p>
+        <p><strong>Status:</strong> ${hotelBooking.status}</p>
+        <p><strong>Check-In:</strong> ${new Date(
+          hotelBooking.checkIn
+        ).toLocaleDateString()}</p>
+        <p><strong>Check-Out:</strong> ${new Date(
+          hotelBooking.checkOut
+        ).toLocaleDateString()}</p>
+        <p><strong>Room Number:</strong> ${hotelBooking.roomIndexNumber}</p>
+        <p><strong>Room Price:</strong> ${hotelBooking.totalPrice}</p>
+      `;
+    }
+    if (flightBooking) {
+      htmlContent += `
+        <h2>Flight Details</h2>
+        <p><strong>Flight Number:</strong> ${flightBooking.reference}</p>
+        <p><strong>Price:</strong> ${flightBooking.price}</p>
+      `;
     }
 
-    doc.end();
+    htmlContent += `
+      <h2><strong>Total Amount:</strong> ${booking.totalPrice}</strong></h2>
+    `;
 
-    return new Promise((resolve) => {
-      stream.on("end", () => {
-        const pdfBuffer = Buffer.concat(chunks);
-        resolve(
-          new NextResponse(pdfBuffer, {
-            status: 200,
-            headers: {
-              "Content-Type": "application/pdf",
-              "Content-Disposition": `attachment; filename="invoice-${bookingId}.pdf"`,
-            },
-          })
-        );
-      });
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+    const pdfBuffer = await page.pdf({ format: "A4" });
+    await browser.close();
+
+    return new Response(pdfBuffer, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="invoice-${bookingId}.pdf"`,
+      },
     });
   } catch (err) {
     console.error(err);
