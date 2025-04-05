@@ -51,7 +51,10 @@ export async function POST(request) {
       !date.every(isValidDate) ||
       !type ||
       typeof type !== "string" ||
-      !((type === "one-way" && date.length === 1) || (type === "round" && date.length === 2))
+      !(
+        (type === "one-way" && date.length === 1) ||
+        (type === "round" && date.length === 2)
+      )
     ) {
       return NextResponse.json(
         { error: "Missing or invalid required fields" },
@@ -98,7 +101,6 @@ export async function POST(request) {
     let allFlights = [];
 
     if (type === "one-way") {
-
       try {
         let response = await axios.get(
           AFS + `origin=${origin}&destination=${destination}&date=${date[0]}`,
@@ -121,8 +123,7 @@ export async function POST(request) {
           { status: 500 }
         );
       }
-    }
-    else {
+    } else {
       try {
         let response = await axios.get(
           AFS + `origin=${origin}&destination=${destination}&date=${date[0]}`,
@@ -145,7 +146,12 @@ export async function POST(request) {
           }
         );
 
-        if (response.data?.results && response.data.results.length > 0 && back.data?.results && back.data.results.length > 0) {
+        if (
+          response.data?.results &&
+          response.data.results.length > 0 &&
+          back.data?.results &&
+          back.data.results.length > 0
+        ) {
           allFlights.push(response.data.results);
           allFlights.push(back.data.results);
         }
