@@ -115,8 +115,11 @@ model Booking {
   status    BookingStatus  @default(PENDING)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
+  customerFirstName  String  @default("")
+  customerLastName  String  @default("")
+  customerEmail   String  @default("")
 
-  totalPrice Decimal? // Sum of flight + hotel price
+  totalPrice  Decimal   @default(0) // Sum of flight + hotel price
 
   // Link to user
   userId  String
@@ -150,9 +153,9 @@ model HotelBooking {
   status          BookingStatus  @default(PENDING)
   checkIn         DateTime
   checkOut        DateTime
-  customerFirstName  String
-  customerLastName  String
-  customerEmail   String
+  customerFirstName  String  @default("")
+  customerLastName  String  @default("")
+  customerEmail   String  @default("")
   totalPrice      Decimal
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -162,7 +165,7 @@ model HotelBooking {
   bookingId  String  @unique
   booking   Booking  @relation(fields: [bookingId], references: [id])
 
-  hotelId  String  @unique
+  hotelId  String
   hotel   Hotel  @relation(fields: [hotelId], references: [id])
 
   roomTypeId  String
