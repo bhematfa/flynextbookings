@@ -21,6 +21,7 @@ async function bookAFSFlight(
   const res = await fetch(url, {
     method: "POST",
     headers: {
+      "Content-Type": "application/json",
       "x-api-key": process.env.AFS_API_KEY,
     },
     body: JSON.stringify({
