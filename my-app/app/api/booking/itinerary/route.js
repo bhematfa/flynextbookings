@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { parseAndVerifyToken } from "@/utils/jwt";
 import { isValidDate } from "@/utils/validations";
-import { findAvailableIndex } from "@utils/availablehelp";
+import { findAvailableIndex, isAvailable } from "@/utils/availablehelp";
 
 async function bookAFSFlight(
   firstName,
@@ -94,13 +94,16 @@ export async function POST(request) {
       );
     }
     console.log(flightIds);
-    console.log("passport #", passportNumber);
+    //console.log("passport #", passportNumber);
     //console.log("room-type: ", roomTypeId);
 
     let newBooking = await prisma.booking.create({
       data: {
         userId: userId,
         status: "PENDING",
+        customerFirstName: user.firstName,
+        customerLastName: user.lastName,
+        customerEmail: user.email,
       },
     });
     console.log("generic booking: ", newBooking);
@@ -141,29 +144,23 @@ export async function POST(request) {
           data: {
             bookingId: newBooking.id,
             reference: flightAFSBookRes.bookingReference,
-            status: "PENDING", //flightAFSBookRes.status,
+            status: "PENDING",
             price: totalFlightPrice,
             flightId: AFSflightId,
           },
-          //  select: {
-          //   id: true,
-          //   reference: true,
-          //   bookingId: true,
-          //   status: true,
-          //   price: true,
-          // },
         });
       } catch (err) {
-        console.log("Prisma error: ", err);
+        await prisma.booking.delete({
+          where: { id: newBooking.id },
+        });
+        console.error("Prisma Flight booking error: ", err);
+        return NextResponse.json(
+          { error: "Flight booking failed" },
+          { status: 500 }
+        );
       }
       console.log("FLIGHT BOOKING: ", flightBooking);
       flightBookingId = flightBooking.id;
-      // if (!roomTypeId) {
-      //   newBooking = await prisma.booking.update({
-      //     where: { id: newBooking.id },
-      //     data: { status: "PENDING" },
-      //   });
-      // }
       const notifyRes = await fetch(notificationsUrl.toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -244,6 +241,11 @@ export async function POST(request) {
         },
       });
       if (!hotelBooking) {
+        if (!passportNumber) {
+          await prisma.booking.delete({
+            where: { id: newBooking.id },
+          });
+        }
         return NextResponse.json(
           { error: "Hotel booking failed" },
           { status: 500 }
@@ -279,14 +281,28 @@ export async function POST(request) {
         }
       }
     }
+    // conditions for flight and hotel bookings, flight only, hotel only
+    if (flightBookingId) {
+      await prisma.booking.update({
+        where: { id: newBooking.id },
+        data: {
+          flightBookingId: flightBookingId,
+        },
+      });
+    }
+    if (hotelBookingId) {
+      await prisma.booking.update({
+        where: { id: newBooking.id },
+        data: {
+          hotelBookingId: hotelBookingId,
+        },
+      });
+    }
+    // update the booking with the total price and flight/hotel booking ids
     newBooking = await prisma.booking.update({
       where: { id: newBooking.id },
       data: {
         totalPrice: totalBookingPrice,
-        flightBookingId: flightBookingId,
-        hotelBookingId: hotelBookingId,
-        flightBookings: flightBooking,
-        hotelBookings: hotelBooking,
       },
     });
 
@@ -302,6 +318,183 @@ export async function POST(request) {
     console.error(err);
     return NextResponse.json(
       { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request) {
+  try {
+    const verifiedUser = parseAndVerifyToken(request);
+    if (!verifiedUser || verifiedUser.err) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = verifiedUser.userId;
+    const booking = await prisma.booking.findFirst({
+      where: { userId, status: "PENDING" },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!booking) {
+      return NextResponse.json(
+        {
+          message: "No pending booking found, please create a booking request",
+        },
+        { status: 404 }
+      );
+    }
+    if (!booking.flightBookingId && !booking.hotelBookingId) {
+      return NextResponse.json(
+        {
+          message:
+            "Invalid Booking Request, please create another booking request",
+        },
+        { status: 400 }
+      );
+    }
+
+    const result = { message: "", booking };
+
+    // flight booking
+    if (booking.flightBookingId) {
+      const flightBooking = await prisma.flightBooking.findUnique({
+        where: { id: booking.flightBookingId },
+      });
+      if (!flightBooking) {
+        return NextResponse.json(
+          {
+            message: "Invalid Flight Booking",
+            error: "Invalid Flight Booking",
+          },
+          { status: 400 }
+        );
+      }
+      if (flightBooking.reference && booking.customerLastName) {
+        const aFSurl = new URL(`${process.env.AFS_BASE_URL}bookings/retrieve`);
+        aFSurl.searchParams.append("bookingReference", flightBooking.reference);
+        aFSurl.searchParams.append("lastName", booking.customerLastName);
+        const respAFS = await fetch(aFSurl.toString(), {
+          method: "GET",
+          headers: { "x-api-key": process.env.AFS_API_KEY },
+        });
+        if (!respAFS.ok) {
+          return NextResponse.json(
+            {
+              message: "Failed to retrieve flight booking details",
+              error: "Failed to retrieve flight booking details",
+            },
+            { status: 400 }
+          );
+        }
+        const temp = await respAFS.json();
+        const flightDetails = {
+          ticketNumber: temp.ticketNumber,
+          flights: temp.flights.map((f) => ({
+            flightNumber: f.flightNumber,
+            airline: f.airline.name,
+            departureCity: f.origin.city,
+            departureAirport: f.origin.airport,
+            departureCode: f.origin.code,
+            departureCountry: f.origin.country,
+            departureTime: f.departureTime,
+            destinationCity: f.destination.city,
+            destinationAirport: f.destination.airport,
+            destinationCountry: f.destination.country,
+            destinationCode: f.destination.code,
+            arrivalTime: f.arrivalTime,
+            duration: f.duration,
+            price: f.price,
+            currency: f.currency,
+            status: f.status,
+          })),
+          status: flightBooking.status,
+        };
+        result.flightBooking = flightBooking;
+        result.flightBookingId = booking.flightBookingId;
+        result.flightDetails = flightDetails;
+        result.message +=
+          (result.message ? " " : "") +
+          "Your flight booking request details have been retrieved successfully.";
+      } else {
+        return NextResponse.json(
+          {
+            message: "Invalid Flight Booking",
+            error: "Invalid Flight Booking",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // hotel booking
+    if (booking.hotelBookingId) {
+      const hotelBooking = await prisma.hotelBooking.findUnique({
+        where: { id: booking.hotelBookingId },
+      });
+      if (!hotelBooking) {
+        return NextResponse.json(
+          { message: "Invalid Hotel Booking", error: "Invalid Hotel Booking" },
+          { status: 400 }
+        );
+      }
+      const roomType = await prisma.roomType.findUnique({
+        where: { id: hotelBooking.roomTypeId },
+      });
+      const hotel = await prisma.hotel.findUnique({
+        where: { id: hotelBooking.hotelId },
+      });
+      if (!roomType || !hotel) {
+        return NextResponse.json(
+          { message: "Invalid Hotel Booking", error: "Invalid Hotel Booking" },
+          { status: 400 }
+        );
+      }
+      if (
+        !isAvailable(
+          roomType.schedule,
+          hotelBooking.checkIn,
+          hotelBooking.checkOut,
+          hotelBooking.roomIndexNumber
+        )
+      ) {
+        return NextResponse.json(
+          { message: "No rooms available", error: "No rooms available" },
+          { status: 400 }
+        );
+      }
+      const roomTypedetails = {
+        roomTypeName: roomType.name,
+        roomTypePrice: roomType.pricePerNight,
+        roomTypeAmenities: roomType.amenities,
+      };
+      const hotelDetails = {
+        hotelName: hotel.name,
+        hotelAddress: hotel.address,
+        hotelStarRating: hotel.starRating,
+        hotelLogo: hotel.logo,
+        address: hotel.address,
+        city: hotel.city,
+        location: hotel.location,
+      };
+      result.roomTypeDetails = roomTypedetails;
+      result.hotelDetails = hotelDetails;
+      result.hotelBooking = hotelBooking;
+      result.hotelBookingId = booking.hotelBookingId;
+      result.message +=
+        (result.message ? " " : "") +
+        "Your Hotel Booking Request Details are available.";
+    }
+
+    if (!result.message) {
+      return NextResponse.json(
+        { message: "No booking details found" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json(result, { status: 200 });
+  } catch (err) {
+    console.error("GET itinerary error:", err);
+    return NextResponse.json(
+      { message: "Internal server error", error: "Internal server error" },
       { status: 500 }
     );
   }
