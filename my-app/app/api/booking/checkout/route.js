@@ -53,6 +53,8 @@ export async function POST(request) {
     const notificationsUrl = new URL("/api/notifications", origin);
     const body = await request.json();
     const { bookingId, cardNumber, expiry, nameOnCard } = body;
+    let hbId = null;
+    let fbId = null;
     if (!bookingId || !cardNumber || !expiry || !nameOnCard) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -93,16 +95,12 @@ export async function POST(request) {
           { status: 400 }
         );
       }
-      // Update flight booking status to CONFIRMED
+      fbId = flightBooking.id;
       flightBooking = await prisma.flightBooking.update({
         where: { id: flightBooking.id },
         data: { status: "CONFIRMED" },
       });
     }
-    // const hotelBooking = await prisma.hotelBooking.update({
-    //   where: { bookingId: bookingId },
-    //   data: { status: "CONFIRMED" },
-    // });
 
     let hotelBooking;
     let roomType;
@@ -118,6 +116,7 @@ export async function POST(request) {
           { status: 404 }
         );
       }
+      hbId = hotelBooking.id;
       finalRoomIndexNumber = hotelBooking.roomIndexNumber;
       roomType = await prisma.roomType.findUnique({
         where: { id: hotelBooking.roomTypeId },
@@ -206,9 +205,6 @@ export async function POST(request) {
       });
     }
 
-    // if (hotelBooking?.length) {
-    //   console.log("Payment validated");
-    // }
     booking = await prisma.booking.update({
       where: { id: bookingId },
       data: { status: "CONFIRMED" },
@@ -226,8 +222,8 @@ export async function POST(request) {
     return NextResponse.json({
       message: "Payment validated. Booking is confirmed.",
       bookingId,
-      hotelBookingId: hotelBooking.id,
-      flightBookingId: flightBooking.id,
+      hotelBookingId: hbId,
+      flightBookingId: fbId,
       status: "CONFIRMED",
     });
   } catch (err) {
