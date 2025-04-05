@@ -60,7 +60,6 @@ export async function POST(request) {
     const requester = await prisma.user.findUnique({
       where: { id: user.userId },
     });
-    //console.log("requester: ", requester);
     if (!requester) {
       return NextResponse.json({ error: "Wrong user" }, { status: 404 });
     }
@@ -123,6 +122,12 @@ export async function POST(request) {
           { status: 404 }
         );
       }
+      if (!hotelBookingId) {
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: { status: "CANCELLED" },
+        });
+      }
     }
 
     let hotelCancelRes = null;
@@ -137,34 +142,52 @@ export async function POST(request) {
           { status: 404 }
         );
       }
-      let roomType = await prisma.roomType.findUnique({
-        where: { id: hotelCancelRes.roomTypeId },
-      });
-      const hotel = await prisma.hotel.findUnique({
-        where: { id: hotelCancelRes.hotelId },
-      });
-      if (!roomType || !hotel) {
-        return NextResponse.json(
-          { error: "Room type or hotel not found" },
-          { status: 404 }
+      if (booking.status === "CONFIRMED") {
+        let roomType = await prisma.roomType.findUnique({
+          where: { id: hotelCancelRes.roomTypeId },
+        });
+        const hotel = await prisma.hotel.findUnique({
+          where: { id: hotelCancelRes.hotelId },
+        });
+        if (!roomType || !hotel) {
+          return NextResponse.json(
+            { error: "Room type or hotel not found" },
+            { status: 404 }
+          );
+        }
+        let newSchedule = await setAvailability(
+          roomType.schedule,
+          hotelCancelRes.checkIn,
+          hotelCancelRes.checkOut,
+          hotelCancelRes.roomIndexNumber,
+          true
         );
-      }
-      let newSchedule = await setAvailability(
-        roomType.schedule,
-        hotelCancelRes.checkIn,
-        hotelCancelRes.checkOut,
-        hotelCancelRes.roomIndexNumber,
-        true
-      );
-      roomType = await prisma.roomType.update({
-        where: { id: roomType.id },
-        data: { schedule: newSchedule },
-      });
-      if (!roomType) {
-        return NextResponse.json(
-          { error: "Room type update error" },
-          { status: 404 }
-        );
+        roomType = await prisma.roomType.update({
+          where: { id: roomType.id },
+          data: { schedule: newSchedule },
+        });
+        if (!roomType) {
+          return NextResponse.json(
+            { error: "Room type update error" },
+            { status: 404 }
+          );
+        }
+        if (hotel.ownerId) {
+          const notifyRes = await fetch(notificationsUrl.toString(), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: `Hotel room booking # ${hotelBookingId} for room ${hotelCancelRes.roomIndexNumber} from ${hotelCancelRes.checkIn} to ${hotelCancelRes.checkOut} has been cancelled.`,
+              uid: hotel.ownerId,
+            }),
+          });
+          if (!notifyRes || notifyRes.error) {
+            return NextResponse.json(
+              { error: notifyRes.error },
+              { status: 404 }
+            );
+          }
+        }
       }
       if (user.userId) {
         const notifyRes = await fetch(notificationsUrl.toString(), {
@@ -179,18 +202,11 @@ export async function POST(request) {
           return NextResponse.json({ error: notifyRes.error }, { status: 404 });
         }
       }
-      if (hotel.ownerId) {
-        const notifyRes = await fetch(notificationsUrl.toString(), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: `Hotel room booking # ${hotelBookingId} for room ${hotelCancelRes.roomIndexNumber} from ${hotelCancelRes.checkIn} to ${hotelCancelRes.checkOut} has been cancelled.`,
-            uid: hotel.ownerId,
-          }),
+      if (!flightBookingId) {
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: { status: "CANCELLED" },
         });
-        if (!notifyRes || notifyRes.error) {
-          return NextResponse.json({ error: notifyRes.error }, { status: 404 });
-        }
       }
     }
 
