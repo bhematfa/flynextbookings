@@ -68,7 +68,6 @@ function PictureModal({ isOpen, onClose, token, onUpdated }: PictureModalProps) 
         setError(data.error || "Error uploading image");
         return;
       }
-      // Close modal and refresh parent
       onClose();
       onUpdated();
     } catch (err) {
@@ -155,7 +154,7 @@ export default function ProfilePage() {
       setLoading(true);
       setError("");
 
-      // 1) GET /api/auth/profile
+
       const res = await fetch("/api/auth/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -174,7 +173,7 @@ export default function ProfilePage() {
       setLastName(userData.lastName || "");
       setPhoneNumber(userData.phoneNumber || "");
 
-      // 2) GET /api/auth/profilePicture
+
       const picRes = await fetch("/api/auth/profilePicture", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -193,7 +192,6 @@ export default function ProfilePage() {
     }
   }
 
-  // Refresh after picture upload
   function refreshProfilePicture() {
     fetchUserProfile();
   }
@@ -231,7 +229,6 @@ export default function ProfilePage() {
         return;
       }
 
-      // Update local state
       setProfile(data);
       setIsEditing(false);
     } catch (err) {
@@ -284,7 +281,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Button to open modal */}
+        {/* Button to open editor */}
         <div className="flex justify-center mb-4">
           <button
             onClick={() => setShowPictureModal(true)}
@@ -381,7 +378,6 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* The PictureModal */}
       <PictureModal
         isOpen={showPictureModal}
         onClose={() => setShowPictureModal(false)}

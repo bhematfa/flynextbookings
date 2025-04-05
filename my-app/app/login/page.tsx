@@ -1,5 +1,7 @@
 "use client";
-
+/*****************************************************
+ * OpenAI. (2025). ChatGPT (Feb 06 version) [Large language model]. https://chatgpt.com
+ *****************************************************/
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -29,11 +31,9 @@ export default function LoginPage() {
         setError(data.error || "Login error");
         return;
       }
-        // token saved to local storage
       const token = data.token;
       localStorage.setItem("flynextToken", token);
 
-      // Redirect to profile
       router.push("/profile");
     } catch (err) {
       console.error(err);
