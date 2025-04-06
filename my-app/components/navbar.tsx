@@ -15,6 +15,7 @@ export default function Navbar() {
       const token = localStorage.getItem("flynextToken");
       if (token) {
         const decoded = signToken(token);
+        console.log("Decoded token:", decoded);
         if (decoded) {
           setUser(decoded);
         }
@@ -38,7 +39,7 @@ export default function Navbar() {
         {/* Center: Navigation Buttons */}
         <div className="flex-1 flex justify-center space-x-6">
           <button
-            onClick={() => router.push("/flights")}
+            onClick={() => router.push("/flights/search")}
             className="hover:text-blue-600 transition-colors"
           >
             <Plane className="h-6 w-6 text-blue-600" />

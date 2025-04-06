@@ -10,7 +10,7 @@ const cards = [
   {
     title: "Find Flights",
     icon: <Plane className="h-6 w-6 text-blue-600" />,
-    path: "/flights",
+    path: "/flights/search",
     desc: "Search for the best flight deals to your dream destinations",
     image: "url('/airplane.jpg')",
   },
@@ -25,7 +25,7 @@ const cards = [
 
 export default function Home() {
   return (
-    <div className="relative h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+    <div className="relative bg-gray-50 dark:bg-gray-900">
       {/* Hero Background */}
       <div className="absolute inset-0 z-0">
         <div
