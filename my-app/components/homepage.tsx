@@ -12,12 +12,14 @@ const cards = [
     icon: <Plane className="h-6 w-6 text-blue-600" />,
     path: "/flights",
     desc: "Search for the best flight deals to your dream destinations",
+    image: "url('/airplane.jpg')",
   },
   {
     title: "Book Hotels",
     icon: <Hotel className="h-6 w-6 text-blue-600" />,
     path: "/hotel_visitor",
     desc: "Find perfect accommodations for your stay at the best prices",
+    image: "url('/hotel.jpg')",
   },
 ];
 

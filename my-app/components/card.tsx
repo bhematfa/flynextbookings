@@ -2,10 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { ReactNode } from "react";
 import { Plane, Hotel, ArrowRight } from "lucide-react";
 
 
-export default function Card({ title, icon, path, desc }) {
+interface CardProps {
+    title: string;
+    icon: ReactNode;
+    path: string;
+    desc: string;
+    image: string; // should be a URL, passed as a string
+  }
+
+export default function Card({ title, icon, path, desc, image }: CardProps) {
   const router = useRouter();
 
   return (
@@ -16,7 +25,7 @@ export default function Card({ title, icon, path, desc }) {
       <div
         className="h-48 w-full bg-gray-200 dark:bg-gray-700"
         style={{
-          backgroundImage: "url('/placeholder.svg?height=400&width=600')",
+          backgroundImage: image,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
