@@ -8,7 +8,7 @@ DB_USER="your_username"    # Replace with your database username
 DB_PASS="your_password"    # Replace with your database password
 
 # JSON file containing mock data
-JSON_FILE="hotels-data.json"
+JSON_FILE="fake_hotels_with_rooms_limited.json"
 
 # Insert data into PostgreSQL
 echo "Starting data import..."
