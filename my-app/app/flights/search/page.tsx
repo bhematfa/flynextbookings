@@ -4,18 +4,25 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Plane, Calendar, ArrowRight } from "lucide-react";
+import AsyncSelect from "react-select/async";
+
+interface Suggestion {
+  actual: string; // city name or airport code
+  label: string; // display name
+  type: "city" | "airport";
+}
 
 interface FlightSearchForm {
-  origin: string;
-  destination: string;
+  origin: Suggestion | null;
+  destination: Suggestion | null;
   type: "one-way" | "round";
   date: string[];
 }
 
 export default function FlightSearchPage() {
   const [form, setForm] = useState<FlightSearchForm>({
-    origin: "",
-    destination: "",
+    origin: null,
+    destination: null,
     type: "one-way",
     date: [""],
   });
@@ -23,17 +30,50 @@ export default function FlightSearchPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // Fetch suggestions from the /api/flights/dropdown endpoint
+  const loadOptions = async (inputValue: string) => {
+    if (!inputValue) return [];
+    try {
+      const response = await fetch(`/api/flights/dropdown?q=${encodeURIComponent(inputValue)}`);
+      const data = await response.json();
+      return data.map((item: { id: string; name: string; value:string; type: string }) => ({
+        value: item.id,
+        label: item.name,
+        actual: item.value,
+      }));
+    } catch (err) {
+      console.error("Error fetching dropdown suggestions:", err);
+      return [];
+    }
+  };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    if (!form.origin || !form.destination) {
+      setError("Please select both origin and destination.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post("http://localhost:3000/api/flights", form, {
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        "http://localhost:3000/api/flights",
+        {
+          origin: form.origin.actual, // Extract city name or code
+          destination: form.destination.actual,
+          date: form.date,
+          type: form.type,
         },
-      });
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.data.length === 0) {
         setError("No flights found.");
@@ -41,7 +81,6 @@ export default function FlightSearchPage() {
         return;
       }
 
-      // Redirect to results page with data
       router.push(
         `/flights/results?results=${encodeURIComponent(JSON.stringify(response.data))}&type=${form.type}`
       );
@@ -94,26 +133,28 @@ export default function FlightSearchPage() {
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                   Origin
                 </label>
-                <input
-                  type="text"
+                <AsyncSelect
+                  cacheOptions
+                  loadOptions={loadOptions}
                   value={form.origin}
-                  onChange={(e) => setForm({ ...form, origin: e.target.value })}
-                  required
-                  className="w-full px-4 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                  onChange={(selected) => setForm({ ...form, origin: selected })}
                   placeholder="e.g., Toronto"
+                  className="text-gray-900"
+                  required
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                   Destination
                 </label>
-                <input
-                  type="text"
+                <AsyncSelect
+                  cacheOptions
+                  loadOptions={loadOptions}
                   value={form.destination}
-                  onChange={(e) => setForm({ ...form, destination: e.target.value })}
-                  required
-                  className="w-full px-4 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                  onChange={(selected) => setForm({ ...form, destination: selected })}
                   placeholder="e.g., Zurich"
+                  className="text-gray-900"
+                  required
                 />
               </div>
             </div>
