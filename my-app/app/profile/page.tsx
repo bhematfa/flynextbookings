@@ -68,6 +68,7 @@ function PictureModal({ isOpen, onClose, token, onUpdated }: PictureModalProps) 
         setError(data.error || "Error uploading image");
         return;
       }
+      window.dispatchEvent(new Event("profilePictureUpdated")); // Dispatch event
       onClose();
       onUpdated();
     } catch (err) {

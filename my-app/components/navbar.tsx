@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Hotel, Plane, LogIn, LogOut, UserPlus } from "lucide-react";
+import { Hotel, Plane, LogIn, LogOut, UserPlus, User, Bell } from "lucide-react";
 import { parseAndVerifyToken, verifyToken } from "@/utils/jwt";
 import DarkModeToggle from "./darkmodetoggle";
 import { log } from "console";
@@ -22,6 +22,22 @@ export default function Navbar() {
   const [user, setUser] = useState<CustomJwtPayload | null>(null);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fallbackImage = "/avatar.png"; // Generic fallback in public/
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Dropdown state
+
+  // Dropdown menu items
+  const dropdownItems = [
+    { label: "Profile", icon: <User className="h-4 w-4" />, path: "/profile" },
+    {
+      label: "Notifications",
+      icon: <Bell className="h-4 w-4" />,
+      path: "/notifications",
+    },
+    {
+      label: "Hotel Owner Page",
+      icon: <Hotel className="h-4 w-4" />,
+      path: "/hotel_owner",
+    },
+  ];
 
   // Load user from token
   const loadUser = () => {
@@ -50,7 +66,7 @@ export default function Navbar() {
     }
 
     try {
-      const response = await fetch("/api/profile/picture", {
+      const response = await fetch("/api/auth/profilePicture", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -84,12 +100,20 @@ export default function Navbar() {
       loadUser();
     };
 
+    const handleProfileUpdate = () => {
+      console.log("Received profilePictureUpdated event");
+      fetchProfilePicture();
+    };
+
     window.addEventListener("userLoggedIn", handleLogin);
     window.addEventListener("userLoggedOut", handleLogout);
+    window.addEventListener("profilePictureUpdated", handleProfileUpdate);
 
     return () => {
       window.removeEventListener("userLoggedIn", handleLogin);
       window.removeEventListener("userLoggedOut", handleLogout);
+      window.removeEventListener("profilePictureUpdated", handleProfileUpdate);
+      if (profilePicture) URL.revokeObjectURL(profilePicture) // Clean up the object URL
     };
   }, []);
 
@@ -145,26 +169,62 @@ export default function Navbar() {
         <div className="flex-1 flex justify-end items-center space-x-4">
           {user ? (
             <>
-                <button
-                onClick={() => router.push("/profile")}
-                className="hover:opacity-75 transition-opacity"
-                title="Go to Dashboard"
-                >
-                <Image
-                  src={profilePicture || fallbackImage}
-                  alt="User Profile"
-                  width={32}
-                  height={32}
-                  className="rounded-full object-cover"
-                  onError={() => setProfilePicture(fallbackImage)}
-                />
-                </button>
-              <button
-                onClick={handleLogoutClick}
-                className="hover:text-blue-600 transition-colors"
+                <div
+                className="relative"
+                onMouseEnter={() => setIsDropdownOpen(true)}
+                onMouseLeave={() => setIsDropdownOpen(false)}
               >
-                <LogOut className="h-6 w-6 text-blue-600" />
-              </button>
+                <button
+                  className="hover:opacity-75 transition-opacity"
+                  title="User Menu"
+                >
+                  <div className="w-8 h-8 rounded-full overflow-hidden">
+                    {profilePicture ? (
+                      <Image
+                        src={profilePicture}
+                        alt="User Profile"
+                        width={32}
+                        height={32}
+                        className="object-cover w-full h-full"
+                        onError={(e) => (e.currentTarget.src = fallbackImage)}
+                      />
+                    ) : (
+                      <Image
+                        src={fallbackImage}
+                        alt="Fallback Profile"
+                        width={32}
+                        height={32}
+                        className="object-cover w-full h-full"
+                        onError={(e) => (e.currentTarget.src = "/avatar.png")}
+                      />
+                    )}
+                  </div>
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 z-50">
+                    {dropdownItems.map((item) => (
+                      <button
+                        key={item.label}
+                        onClick={() => {
+                          router.push(item.path);
+                          setIsDropdownOpen(false);
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        {item.icon}
+                        <span className="ml-2">{item.label}</span>
+                      </button>
+                    ))}
+                    <button
+                      onClick={handleLogoutClick}
+                      className="flex items-center w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span className="ml-2">Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <>
