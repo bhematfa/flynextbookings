@@ -30,7 +30,7 @@ const CreateHotel = () => {
         const response = await fetch("/api/hotels/list", {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", Authorization: `Bearer ${token}`,
           },
         });
         const data = await response.json();

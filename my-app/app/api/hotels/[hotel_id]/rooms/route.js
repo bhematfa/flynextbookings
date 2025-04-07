@@ -2,16 +2,52 @@ import fs from "fs";
 import path from "path";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-// import { parseAndVerifyToken } from "../../../../../utils/jwt.js";
+import { parseAndVerifyToken } from "@/utils/jwt.js";
+
 
 // add room type
 export async function POST(request, { params }) {
   try {
     const { hotel_id } = await params; // Hotel ID from the URL
-    const { name, amenities, pricePerNight, images, totalRooms } =
-      await request.json();
+    const { name, amenities, pricePerNight, images, totalRooms } = await request.json();
 
-    // Validate required fields
+    const userDec = await parseAndVerifyToken(request);
+
+    if (userDec.err) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userDec.userId },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "You are not authorized." },
+        { status: 401 }
+      );
+    }
+
+    const hotel = await prisma.hotel.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (hotel.ownerId !== user.id) {
+      return NextResponse.json(
+        { error: "You are not authorized." },
+        { status: 403 }
+      );
+    }
+
+    if (!hotel) {
+      return NextResponse.json(
+        { error: "Hotel does not exist." },
+        { status: 404 }
+      );
+    }
+
     if (!name || !amenities || !pricePerNight || !images || !totalRooms) {
       return NextResponse.json({ error: "Invalid Field" }, { status: 400 });
     }
@@ -39,19 +75,6 @@ export async function POST(request, { params }) {
       saveBase64File(image, `room-image-${Date.now()}-${index}.png`)
     );
 
-    // Retrieve the hotel to ensure it exists
-    const hotel = await prisma.hotel.findUnique({
-      where: {
-        id: hotel_id,
-      },
-    });
-
-    if (!hotel) {
-      return NextResponse.json(
-        { error: "Hotel does not exist." },
-        { status: 404 }
-      );
-    }
 
     const today = new Date();
     const maxDate = new Date(
