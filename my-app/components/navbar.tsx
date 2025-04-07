@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Hotel, Plane, LogIn, LogOut, UserPlus } from "lucide-react";
-import { signToken } from "@/utils/jwt";
+import { parseAndVerifyToken } from "@/utils/jwt";
 import DarkModeToggle from "./darkmodetoggle";
 
 export default function Navbar() {
@@ -14,7 +14,7 @@ export default function Navbar() {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("flynextToken");
       if (token) {
-        const decoded = signToken(token);
+        const decoded = parseAndVerifyToken(token);
         console.log("Decoded token:", decoded);
         if (decoded) {
           setUser(decoded);
