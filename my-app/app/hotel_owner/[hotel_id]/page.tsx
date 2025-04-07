@@ -26,7 +26,12 @@ const ManageRoomTypes = ({ params }: { params: Promise<{ hotel_id: string }> }) 
         const id = resolvedParams.hotel_id; 
         setHotelId(id); 
 
-        const response = await fetch(`/api/hotels/${id}/rooms`);
+        const response = await fetch(`/api/hotels/${id}/rooms`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const data = await response.json();
         if (!response.ok) {
           setError(data.error || "Failed to fetch room types.");

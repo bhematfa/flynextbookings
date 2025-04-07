@@ -73,7 +73,7 @@ const CreateHotel = () => {
     setError("");
     setSuccessMessage("");
 
-    try {
+    try { 
       const base64Logo = formData.logo ? await fileToBase64(formData.logo) : null; // Convert logo to base64
       const base64Images = await Promise.all(images.map((file) => fileToBase64(file))); // Convert images to base64
 
@@ -106,8 +106,7 @@ const CreateHotel = () => {
           city: "",
           starRating: "",
         });
-        setImages([]); // Clear image attachments
-        // Refresh the hotel list after adding a new hotel
+        setImages([]); 
         setHotelList((prevHotels) => [...prevHotels, data.hotel]);
       }
     } catch (err) {

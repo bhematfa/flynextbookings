@@ -96,9 +96,6 @@ export async function PATCH(request, { params }) {
 
     const userDec = await parseAndVerifyToken(request);
 
-    const { origin } = new URL(request.url);
-    const notificationsUrl = new URL("/api/notifications", origin);
-
     if (userDec.err) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -145,6 +142,8 @@ export async function PATCH(request, { params }) {
       data: { status: "CANCELLED" },
     });
 
+    const { origin } = new URL(request.url);
+    const notificationsUrl = new URL("/api/notifications", origin);
     await axios.post(notificationsUrl.toString(), {
       message: "Your Booking is Cancelled",
       uid: user.id,

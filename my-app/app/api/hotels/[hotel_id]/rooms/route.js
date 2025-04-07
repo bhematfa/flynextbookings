@@ -8,7 +8,7 @@ import { parseAndVerifyToken } from "@/utils/jwt.js";
 // add room type
 export async function POST(request, { params }) {
   try {
-    const { hotel_id } = await params; // Hotel ID from the URL
+    const { hotel_id } = await params; 
     const { name, amenities, pricePerNight, images, totalRooms } = await request.json();
 
     const userDec = await parseAndVerifyToken(request);
@@ -51,6 +51,8 @@ export async function POST(request, { params }) {
     if (!name || !amenities || !pricePerNight || !images || !totalRooms) {
       return NextResponse.json({ error: "Invalid Field" }, { status: 400 });
     }
+
+    //image logic - copilot
 
     // Decode Base64 and save files locally
     const saveBase64File = (base64String, fileName) => {
