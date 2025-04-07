@@ -6,6 +6,12 @@ export async function GET(request) {
   try {
     const userDec = await parseAndVerifyToken(request);
 
+    if (userDec.err || !userDec.userId) {
+        return NextResponse.json(
+            ([])
+        );  
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: userDec.userId },
     });
