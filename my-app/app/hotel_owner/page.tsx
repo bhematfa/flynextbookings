@@ -2,7 +2,6 @@
 //import router from "next/router";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 // create hotel
 
@@ -73,7 +72,7 @@ const CreateHotel = () => {
     setError("");
     setSuccessMessage("");
 
-    try { 
+    try {
       const base64Logo = formData.logo ? await fileToBase64(formData.logo) : null; // Convert logo to base64
       const base64Images = await Promise.all(images.map((file) => fileToBase64(file))); // Convert images to base64
 
@@ -106,7 +105,7 @@ const CreateHotel = () => {
           city: "",
           starRating: "",
         });
-        setImages([]); 
+        setImages([]);
         setHotelList((prevHotels) => [...prevHotels, data.hotel]);
       }
     } catch (err) {
@@ -216,20 +215,21 @@ const CreateHotel = () => {
               href={`/hotel_owner/${hotel.id}`}
               className="border rounded p-4 flex items-center space-x-4 hover:bg-gray-700"
             >
+
+              {/* Hotel Logo */}
               {hotel.logo ? (
-                <Image
+                <img
                   src={hotel.logo}
                   alt={`${hotel.name} logo`}
-                  width={48}
-                  height={48}
-                  className="object-cover rounded-full"
+                  className="w-12 h-12 object-cover rounded-full"
                 />
               ) : (
                 <div className="w-12 h-12 bg-gray-600 flex items-center justify-center rounded-full">
                   <span className="text-sm text-white">No Logo</span>
                 </div>
               )}
-              
+
+
 
               {/* Hotel Details */}
               <div>

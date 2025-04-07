@@ -30,7 +30,7 @@ export async function POST(request, { params }) {
 
     const hotel = await prisma.hotel.findUnique({
       where: {
-        id: id,
+        id: hotel_id,
       },
     });
 

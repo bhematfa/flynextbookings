@@ -98,6 +98,10 @@ export async function GET(request) {
     const startDate = new Date(checkIn);
     const endDate = new Date(checkOut);
 
+    if (!checkIn || !checkOut || !city) {
+      return NextResponse.json({ error: "Invalid Field" }, { status: 400 });
+    }
+
     if (
       !startDate ||
       !endDate ||
@@ -107,11 +111,10 @@ export async function GET(request) {
     }
 
     const whereClause = {};
-    if (city) whereClause.city = city;
     if (name) whereClause.name = name;
     if (starRating) whereClause.starRating = starRating;
+    if (city) whereClause.city = city;
 
-    // Query initial hotel and roomType data
     const result = await prisma.hotel.findMany({
       where: whereClause,
       include: {
@@ -119,16 +122,18 @@ export async function GET(request) {
       },
     });
 
-    // Filter hotels by room availability and price
     const availableHotels = result.filter((hotel) => {
-      // Check if the hotel has any room types that match the criteria
       const hasAvailableRoom = hotel.roomTypes.some((roomType) => {
-        const isAvailable =
-          findAvailability(roomType.schedule, checkIn, checkOut) > 0;
-        const isInPriceRange =
-          roomType.pricePerNight >= parseFloat(priceRange[0]) &&
-          roomType.pricePerNight <= parseFloat(priceRange[1]);
-        return isAvailable && isInPriceRange;
+        const isAvailable = findAvailability(roomType.schedule, checkIn, checkOut) > 0;
+
+        if (priceRange && priceRange.length === 2) {
+          const isInPriceRange =
+            roomType.pricePerNight >= parseFloat(priceRange[0]) &&
+            roomType.pricePerNight <= parseFloat(priceRange[1]);
+          return isAvailable && isInPriceRange;
+        }
+        return isAvailable;
+
       });
 
       return hasAvailableRoom;
