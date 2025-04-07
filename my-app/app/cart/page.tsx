@@ -298,12 +298,12 @@ export default function CartPage() {
             <p>{roomTypeDetails.roomTypeName}</p>
             <p className="font-semibold">Price/night:</p>
             <p>{roomTypeDetails.roomTypePrice}</p>
-            {/* {roomTypeDetails.roomTypeAmenities && (
+            {roomTypeDetails.roomTypeAmenities && (
               <>
                 <p className="font-semibold">Amenities:</p>
-                <p>{roomTypeDetails.roomTypeAmenities.toString}</p>
+                <p>{(roomTypeDetails.roomTypeAmenities.toString())}</p>
               </>
-            )} */}
+            )}
           </div>
         )}
 
