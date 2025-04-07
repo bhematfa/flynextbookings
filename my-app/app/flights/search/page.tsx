@@ -81,8 +81,11 @@ export default function FlightSearchPage() {
         return;
       }
 
+      sessionStorage.setItem("flightResults", JSON.stringify(response.data));
+      setLoading(false);
+
       router.push(
-        `/flights/results?results=${encodeURIComponent(JSON.stringify(response.data))}&type=${form.type}`
+        `/flights/results?type=${form.type}`
       );
     } catch (err: any) {
       setError(err.response?.data?.error || "Error fetching flights.");

@@ -26,7 +26,7 @@ const cards = [
 export default function Home() {
   return (
     <div className="relative bg-gray-50 dark:bg-gray-900">
-      {/* Hero Background */}
+      {/* Hero Background
       <div className="absolute inset-0 z-0">
         <div
           className="absolute inset-0 bg-gradient-to-b from-blue-100 via-gray-50 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-900"
@@ -37,10 +37,10 @@ export default function Home() {
             opacity: 0.5,
           }}
         />
-      </div>
+      </div> */}
 
       {/* Main Content */}
-      <div className="container relative z-10 flex flex-col justify-center items-center h-full text-center">
+      <div className="container relative z-10 flex flex-col justify-center items-center h-full text-center pt-8">
         <div className="max-w-3xl mb-10">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6">
             Your Journey Begins Here

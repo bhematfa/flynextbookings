@@ -55,7 +55,7 @@ export default function FlightResultsPage() {
   const [checkOutDate, setCheckOutDate] = useState<string>("");
 
   useEffect(() => {
-    const resultsParam = searchParams.get("results");
+    const resultsParam = sessionStorage.getItem("flightResults");
     const typeParam = searchParams.get("type") as "one-way" | "round";
 
     if (resultsParam) {
