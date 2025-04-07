@@ -64,7 +64,7 @@ export default function FlightResultsPage() {
         setResults(parsedResults);
         setType(typeParam || "one-way");
 
-        if (localStorage.getItem("flynextoken") && parsedResults.length > 0 && parsedResults[0].length > 0) {
+        if (localStorage.getItem("flynextToken") && parsedResults.length > 0 && parsedResults[0].length > 0) {
             const firstOption = parsedResults[0][0];
             const lastOutboundFlight = firstOption.flights[firstOption.flights.length - 1];
             const city = lastOutboundFlight.destination.city;
@@ -198,7 +198,7 @@ export default function FlightResultsPage() {
               </>
             )}
 
-            {localStorage.getItem("flynextoken") && (
+            {localStorage.getItem("flynextToken") && (
                 <div className="mt-10">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                     Hotel Suggestions
