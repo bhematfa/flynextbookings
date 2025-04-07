@@ -33,6 +33,7 @@ export default function LoginPage() {
       }
       const token = data.token;
       localStorage.setItem("flynextToken", token);
+      window.dispatchEvent(new Event("userLoggedIn"));
 
       router.push("/profile");
     } catch (err) {
