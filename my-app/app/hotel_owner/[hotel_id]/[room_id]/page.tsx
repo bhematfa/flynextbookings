@@ -14,6 +14,9 @@ const RoomDetails = ({
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [availability, setAvailability] = useState<number | null>(null);
+  const [changeCheckIn, setChangeCheckIn] = useState("");
+  const [changeCheckOut, setChangeCheckOut] = useState("");
+  const [changeAvailability, setChangeAvailability] = useState<number | null>(null);
 
   const { hotel_id, room_id } = React.use(params) || {};
 
@@ -32,7 +35,7 @@ const RoomDetails = ({
         const response = await fetch(`/api/hotels/rooms/${room_id}/room_info`, {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
         });
         const data = await response.json();
@@ -74,8 +77,8 @@ const RoomDetails = ({
         }
       );
       const data = await response.json();
-      setAvailability(data || 0); 
-      setError(""); 
+      setAvailability(data || 0);
+      setError("");
     } catch (err) {
       console.error("Error checking room availability:", err);
       setError("Failed to fetch room availability.");
@@ -122,6 +125,72 @@ const RoomDetails = ({
           className="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded"
         >
           Check Availability
+        </button>
+      </div>
+
+      {/* Change Room Availability */}
+      <div className="availability-form mt-6 p-6 bg-gray-800 rounded">
+        <h2 className="text-2xl font-semibold mb-4">Change Room Availability</h2>
+        <label htmlFor="changeStartDate" className="block mb-2 text-white">
+          Start Date:
+        </label>
+        <input
+          type="date"
+          id="changeStartDate"
+          value={changeCheckIn}
+          onChange={(e) => setChangeCheckIn(e.target.value)}
+          className="w-full p-3 rounded bg-gray-700 text-white mb-4"
+        />
+        <label htmlFor="changeEndDate" className="block mb-2 text-white">
+          End Date:
+        </label>
+        <input
+          type="date"
+          id="changeEndDate"
+          value={changeCheckOut}
+          onChange={(e) => setChangeCheckOut(e.target.value)}
+          className="w-full p-3 rounded bg-gray-700 text-white mb-4"
+        />
+        <label htmlFor="newAvailability" className="block mb-2 text-white">
+          Update Available Rooms:
+        </label>
+        <input
+          type="number"
+          id="newAvailability"
+          value={changeAvailability !== null ? changeAvailability : ""}
+          onChange={(e) => setChangeAvailability(Number(e.target.value))}
+          className="w-full p-3 rounded bg-gray-700 text-white mb-4"
+        />
+        <button
+          onClick={async () => {
+            try {
+              const response = await fetch(`/api/hotels/rooms/${room_id}`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  availableRooms: changeAvailability,
+                  checkIn: changeCheckIn,
+                  checkOut: changeCheckOut,
+                }),
+              });
+
+              const result = await response.json();
+              if (response.ok) {
+                alert(result.message || "Room availability updated successfully!");
+              } else {
+                setError(result.error || "Failed to update room availability.");
+              }
+            } catch (err) {
+              console.error("Error updating room availability:", err);
+              setError("Failed to update room availability.");
+            }
+          }}
+          className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded"
+        >
+          Update Availability
         </button>
       </div>
 
