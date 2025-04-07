@@ -51,7 +51,7 @@ export async function GET(request) {
 
         if (flightBooking?.reference && bookingData.customerLastName) {
           const aFSurl = new URL(
-            `${process.env.AFS_BASE_URL}bookings/retrieve`
+            `${process.env.AFS_BASE_URL}api/bookings/retrieve`
           );
           aFSurl.searchParams.append(
             "bookingReference",
@@ -86,6 +86,10 @@ export async function GET(request) {
               })),
               status: flightBooking.status,
             };
+            // console.log(
+            //   "Flight booking details retrieved successfully",
+            //   bookingData.flightDetails
+            // );
           }
         }
       }
