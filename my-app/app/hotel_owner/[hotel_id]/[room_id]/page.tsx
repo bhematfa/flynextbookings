@@ -35,7 +35,7 @@ const RoomDetails = ({
         const response = await fetch(`/api/hotels/rooms/${room_id}/room_info`, {
           method: "GET",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json", Authorization: `Bearer ${token}`
           },
         });
         const data = await response.json();

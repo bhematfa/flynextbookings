@@ -29,6 +29,8 @@ export async function POST(request) {
       return NextResponse.json({ error: "Invalid Field" }, { status: 400 });
     }
 
+    //image logic - copilot
+
     // Decode Base64 and save files locally
     const saveBase64File = (base64String, fileName) => {
       const uploadDir = path.join(process.cwd(), "public/uploads"); // Save files in 'public/uploads'
@@ -99,19 +101,15 @@ export async function GET(request) {
     if (
       !startDate ||
       !endDate ||
-      !city ||
-      !name ||
-      !starRating ||
-      !priceRange
+      !city
     ) {
       return NextResponse.json({ error: "Invalid Field" }, { status: 400 });
     }
 
-    const whereClause = {
-      ...(city && { city }),
-      ...(name && { name }),
-      ...(starRating && { starRating }),
-    };
+    const whereClause = {};
+    if (city) whereClause.city = city;
+    if (name) whereClause.name = name;
+    if (starRating) whereClause.starRating = starRating;
 
     // Query initial hotel and roomType data
     const result = await prisma.hotel.findMany({

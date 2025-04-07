@@ -117,7 +117,12 @@ export async function PATCH(request, { params }) {
           where: { id: booking.id },
           data: { status: "CANCELLED" },
         });
-        // notify user
+
+        const notificationsUrl = new URL("/api/notifications", origin);
+        await axios.post(notificationsUrl.toString(), {
+          message: "Your Booking is Cancelled",
+          uid: user.id,
+        });
 
         currentAvailableRooms = findAvailability(
           room.schedule,
@@ -166,8 +171,6 @@ export async function GET(request, { params }) {
     });
 
     const availRooms = findAvailability(room.schedule, startDate, endDate);
-
-    console.log(availRooms);
 
     return NextResponse.json(availRooms);
   } catch (error) {
