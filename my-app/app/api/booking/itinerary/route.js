@@ -58,7 +58,7 @@ export async function POST(request) {
     if (!verifiedUser || verifiedUser.err) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(verifiedUser);
+    //console.log(verifiedUser);
     const userId = verifiedUser.userId;
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -68,12 +68,12 @@ export async function POST(request) {
         email: true,
       },
     });
-    console.log(user);
+    //console.log(user);
 
     if (!user) {
       return NextResponse.json({ error: "No User Found" }, { status: 401 });
     }
-    console.log(user);
+    //console.log(user);
     const {
       flightIds = [],
       passportNumber,
@@ -95,7 +95,7 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    console.log(flightIds);
+    //console.log(flightIds);
     //console.log("passport #", passportNumber);
     //console.log("room-type: ", roomTypeId);
 
@@ -108,7 +108,7 @@ export async function POST(request) {
         customerEmail: user.email,
       },
     });
-    console.log("generic booking: ", newBooking);
+    //console.log("generic booking: ", newBooking);
 
     if (flightIds.length > 0 && passportNumber) {
       const flightAFSBookRes = await bookAFSFlight(
@@ -371,14 +371,30 @@ export async function GET(request) {
         );
       }
       if (flightBooking.reference && booking.customerLastName) {
-        const aFSurl = new URL(`${process.env.AFS_BASE_URL}bookings/retrieve`);
+        const aFSurl = new URL(
+          `${process.env.AFS_BASE_URL}api/bookings/retrieve`
+        );
         aFSurl.searchParams.append("bookingReference", flightBooking.reference);
         aFSurl.searchParams.append("lastName", booking.customerLastName);
         const respAFS = await fetch(aFSurl.toString(), {
           method: "GET",
-          headers: { "x-api-key": process.env.AFS_API_KEY },
+          headers: {
+            "x-api-key": process.env.AFS_API_KEY,
+            "Content-Type": "application/json",
+          },
         });
+        if (!respAFS) {
+          console.log("AFS fetch failed and no response");
+          return NextResponse.json(
+            {
+              message: "Failed to retrieve flight booking details",
+              error: "Failed to retrieve flight booking details",
+            },
+            { status: 400 }
+          );
+        }
         if (!respAFS.ok) {
+          console.log("AFS response not ok:", await respAFS.text());
           return NextResponse.json(
             {
               message: "Failed to retrieve flight booking details",
@@ -410,6 +426,7 @@ export async function GET(request) {
           })),
           status: flightBooking.status,
         };
+        //console.log("Flight details: ", flightDetails);
         result.flightBooking = flightBooking;
         result.flightBookingId = booking.flightBookingId;
         result.flightDetails = flightDetails;
