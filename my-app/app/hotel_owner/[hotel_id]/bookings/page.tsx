@@ -59,7 +59,7 @@ const BookingList = ({
 
       if (response.status === 204) {
         setSuccessMessage("Booking has been cancelled.");
-        fetchBookings(); // Refresh bookings list
+        fetchBookings(); 
       } else {
         const data = await response.json();
         setError(data.error || "Failed to cancel booking.");
@@ -71,7 +71,7 @@ const BookingList = ({
   };
 
   useEffect(() => {
-    fetchBookings(); // Fetch bookings on component mount or when filters change
+    fetchBookings(); 
   }, [date, roomType]);
 
   return (

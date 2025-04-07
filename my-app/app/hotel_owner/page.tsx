@@ -34,13 +34,11 @@ const CreateHotel = () => {
           },
         });
         const data = await response.json();
-        console.log("Hotel list data:", data); // Debugging line
         if (data.error) {
           setError(data.error);
         } else {
           setHotelList(data || []);
         }
-        console.log("Hotel list:", hotelList); // Debugging line
       } catch (err) {
         console.error("Error fetching hotel list:", err);
         setError("Failed to fetch hotel list.");
@@ -54,6 +52,7 @@ const CreateHotel = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  //image logic - copilot
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setImages(Array.from(e.target.files)); // Convert FileList to an array of File objects

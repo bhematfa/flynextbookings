@@ -14,7 +14,6 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
   const [checkOut, setCheckOut] = useState("");
   const [roomAvailability, setRoomAvailability] = useState<number[]>([]);
 
-  // Safely unwrap the `params` Promise to get the hotel ID
   const hotel_id = React.use(params)?.hotel_id;
 
   // Fetch hotel details

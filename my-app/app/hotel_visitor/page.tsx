@@ -37,7 +37,7 @@ const HotelSearch = () => {
       if (data.error) {
         setError(data.error);
       } else {
-        // Simply set all hotels returned by the backend
+       
         setHotels(data.availableHotels);
       }
     } catch (err) {

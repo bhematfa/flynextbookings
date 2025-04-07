@@ -22,11 +22,10 @@ const ManageRoomTypes = ({ params }: { params: Promise<{ hotel_id: string }> }) 
   useEffect(() => {
     const fetchRoomTypes = async () => {
       try {
-        const resolvedParams = await params; // Unwrap the Promise
-        const id = resolvedParams.hotel_id; // Extract hotel_id
-        setHotelId(id); // Set hotelId in state
+        const resolvedParams = await params; 
+        const id = resolvedParams.hotel_id; 
+        setHotelId(id); 
 
-        // Fetch room types once hotelId is set
         const response = await fetch(`/api/hotels/${id}/rooms`);
         const data = await response.json();
         if (!response.ok) {
@@ -40,9 +39,8 @@ const ManageRoomTypes = ({ params }: { params: Promise<{ hotel_id: string }> }) 
       }
     };
 
-    // Call the function directly inside useEffect
     fetchRoomTypes();
-  }, [params]); // Dependency array ensures it runs only when params change
+  }, [params]); 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -69,6 +67,8 @@ const ManageRoomTypes = ({ params }: { params: Promise<{ hotel_id: string }> }) 
     setSuccessMessage("");
 
     try {
+
+      //image logic - copilot
       const base64Images = await Promise.all(images.map((file) => fileToBase64(file))); // Convert images to base64
 
       const payload = {
@@ -81,7 +81,7 @@ const ManageRoomTypes = ({ params }: { params: Promise<{ hotel_id: string }> }) 
 
       const response = await fetch(`/api/hotels/${hotelId}/rooms`, {
         method: "POST",
-        headers: { "Authorization": token ? `Bearer ${token}` : "", "Content-Type": "application/json" },
+        headers: { Authorization: token ? `Bearer ${token}` : "", "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -97,7 +97,7 @@ const ManageRoomTypes = ({ params }: { params: Promise<{ hotel_id: string }> }) 
           pricePerNight: "",
           totalRooms: "",
         });
-        setImages([]); // Clear image attachments
+        setImages([]); 
       }
     } catch (err) {
       console.error("Error creating room type:", err);

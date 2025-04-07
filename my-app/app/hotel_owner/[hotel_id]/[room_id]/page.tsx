@@ -15,7 +15,6 @@ const RoomDetails = ({
   const [checkOut, setCheckOut] = useState("");
   const [availability, setAvailability] = useState<number | null>(null);
 
-  // Safely unwrap the `params` Promise to get hotel and room IDs
   const { hotel_id, room_id } = React.use(params) || {};
 
   const token =
@@ -34,14 +33,13 @@ const RoomDetails = ({
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
         });
         const data = await response.json();
         if (data.error) {
           setError(data.error);
         } else {
-          // Ensure images use forward slashes
+          // Ensure images use forward slashes - copilot
           const images = Array.isArray(data.images)
             ? data.images.map((image: string) => image.replace(/\\/g, "/"))
             : [];
@@ -71,14 +69,13 @@ const RoomDetails = ({
         {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
           },
         }
       );
       const data = await response.json();
-      setAvailability(data || 0); // Assuming the API returns the number of available rooms
-      setError(""); // Clear any previous errors
+      setAvailability(data || 0); 
+      setError(""); 
     } catch (err) {
       console.error("Error checking room availability:", err);
       setError("Failed to fetch room availability.");
