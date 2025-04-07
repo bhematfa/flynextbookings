@@ -25,34 +25,33 @@ export async function POST(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!name || !logo || !address || !location || !city || !starRating) {
-      return NextResponse.json({ error: "Invalid Field" }, { status: 400 });
-    }
 
     //image logic - copilot
 
     // Decode Base64 and save files locally
     const saveBase64File = (base64String, fileName) => {
-      const uploadDir = path.join(process.cwd(), "public/uploads"); // Save files in 'public/uploads'
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
 
-      // Ensure the uploads directory exists
+      // Ensure the public/uploads directory exists
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
 
-      const filePath = path.join(uploadDir, fileName); // Complete path for saving file
+      const filePath = path.join(uploadDir, fileName);
       const base64Data = base64String.replace(/^data:image\/\w+;base64,/, ""); // Remove prefix
       const buffer = Buffer.from(base64Data, "base64");
       fs.writeFileSync(filePath, buffer); // Save file locally
 
-      // Return only the relative path (e.g., 'uploads/logo-<timestamp>.png')
-      return path.join("uploads", fileName); // Reference as 'public/uploads'
+      // Return the relative path to the saved file
+      return path.join("uploads", fileName);
     };
 
-    const logoPath = saveBase64File(logo, `logo-${Date.now()}.png`); // Save logo file
+    // Save images
     const imagePaths = images.map((image, index) =>
-      saveBase64File(image, `image-${Date.now()}-${index}.png`)
-    ); // Save all image files
+      saveBase64File(image, `room-image-${Date.now()}-${index}.png`)
+    );
+
+    const logoPath = saveBase64File(logo, `hotel-logo-${Date.now()}.png`);
 
     const hotel = await prisma.hotel.create({
       data: {

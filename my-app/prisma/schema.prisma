@@ -67,7 +67,7 @@ model User {
 model Hotel {
   id         String   @id @default(uuid())
   name       String
-  logo       Json
+  logo       String
   address    String
   city       String
   location   String // city, country
