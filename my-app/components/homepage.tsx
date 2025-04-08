@@ -25,22 +25,9 @@ const cards = [
 
 export default function Home() {
   return (
-    <div className="relative bg-gray-50 dark:bg-gray-900">
-      {/* Hero Background
-      <div className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-blue-100 via-gray-50 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-900"
-          style={{
-            backgroundImage: "url('/placeholder.svg?height=1080&width=1920')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.5,
-          }}
-        />
-      </div> */}
-
+    <div className="bg-gray-50 dark:bg-gray-900 h-screen overflow-hidden">
       {/* Main Content */}
-      <div className="container relative z-10 flex flex-col justify-center items-center h-full text-center pt-8">
+      <div className="container flex flex-col justify-center items-center h-screen text-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mb-10">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6">
             Your Journey Begins Here
