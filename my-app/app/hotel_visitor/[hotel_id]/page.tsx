@@ -127,7 +127,7 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
               <p className="text-black dark:text-white font-bold">Available Rooms: {roomAvailability[index] || "N/A"}</p>
               {/* Add to Cart Button */}
               <button
-                disabled={!roomAvailability[index] || !token} // Disable if no availability
+                disabled={!roomAvailability[index] || !token || roomAvailability[index] === 0} // Disable if no availability
                 onClick={async () => {
                   try {
                     const response = await fetch(`/api/booking/itinerary`, {
