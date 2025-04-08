@@ -3,10 +3,10 @@
     "id": "hotel-001",
     "name": "Hotel 1",
     "logo": "uploads\\logo-1.jpg",
-    "address": "Champ de Mars, 5 Avenue Anatole France",
+    "address": "5 Avenue Anatole France",
     "city": "Paris",
     "location": "Paris, France",
-    "starRating": 4.4,
+    "starRating": 4,
     "images": [
       "uploads\\hotel-1.jpg",
       "uploads\\hotel-3.jpg",
@@ -519,7 +519,7 @@
     "address": "10 Downing Street",
     "city": "London",
     "location": "London, United Kingdom",
-    "starRating": 4.5,
+    "starRating": 5,
     "images": [
       "uploads\\hotel-2.jpg",
       "uploads\\hotel-4.jpg",
@@ -1123,7 +1123,7 @@
     "address": "Syntagma Square",
     "city": "Athens",
     "location": "Athens, Greece",
-    "starRating": 4.4,
+    "starRating": 4,
     "images": [
       "uploads\\hotel-1.jpg",
       "uploads\\hotel-2.jpg",
@@ -1545,7 +1545,7 @@
     "address": "Champ de Mars, 5 Avenue Anatole France",
     "city": "Paris",
     "location": "Paris, France",
-    "starRating": 3.0,
+    "starRating": 3,
     "images": [
       "uploads\\hotel-4.jpg",
       "uploads\\hotel-3.jpg",

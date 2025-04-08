@@ -61,7 +61,7 @@ export default function FlightSearchPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/flights",
+        "/api/flights",
         {
           origin: form.origin.actual, // Extract city name or code
           destination: form.destination.actual,
