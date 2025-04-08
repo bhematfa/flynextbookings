@@ -99,50 +99,50 @@ const HotelSearch = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white  bg-white dark:bg-gray-800">
+    <div className="min-h-screen bg-gray-900 text-white  bg-white dark:bg-gray-900">
       {/* Main Content */}
       <main className="max-w-4xl mx-auto py-10" >
         <h2 className="text-3xl text-center text-black dark:text-white font-bold mb-4 ">Search for Hotels</h2>
-        <form className="bg-gray-800 p-6 rounded-lg space-y-6">
+        <form className="bg-gray-200 dark:bg-gray-800 p-6 rounded-lg space-y-6 ">
           <input
             type="text"
             name="city"
             placeholder="City"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white"
+            className="w-full p-3 rounded text-black dark:text-white bg-white dark:bg-gray-700"
           />
           <input
             type="date"
             name="checkIn"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white"
+            className="w-full p-3 rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
           <input
             type="date"
             name="checkOut"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white"
+            className="w-full p-3 rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
           <input
             type="text"
             name="name"
             placeholder="Hotel Name"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white"
+            className="w-full p-3 rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
           <input
             type="number"
             name="starRating"
             placeholder="Star Rating"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white"
+            className="w-full p-3 rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
           <input
             type="text"
             name="priceRange"
             placeholder="Price Range (e.g., 50-300)"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white"
+            className="w-full p-3 rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
           <button
             type="button"
