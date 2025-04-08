@@ -20,8 +20,8 @@ export default function Navbar() {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fallbackImage = "/avatar.png";
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null); // For debouncing
 
-  // Updated dropdown menu items with "My Bookings" and "Cart"
   const dropdownItems = [
     { label: "Profile", icon: <User className="h-4 w-4" />, path: "/profile" },
     { label: "Notifications", icon: <Bell className="h-4 w-4" />, path: "/notifications" },
@@ -117,6 +117,20 @@ export default function Navbar() {
     router.push("/");
   };
 
+  // Handle mouse enter with no delay
+  const handleMouseEnter = () => {
+    if (timeoutId) clearTimeout(timeoutId); // Clear any pending close
+    setIsDropdownOpen(true);
+  };
+
+  // Handle mouse leave with a 200ms delay
+  const handleMouseLeave = () => {
+    const id = setTimeout(() => {
+      setIsDropdownOpen(false);
+    }, 200); // 200ms delay before closing
+    setTimeoutId(id);
+  };
+
   return (
     <nav className="w-full py-4 bg-white dark:bg-gray-900 shadow-md fixed top-0 z-50">
       <div className="container mx-auto flex items-center px-4">
@@ -151,10 +165,13 @@ export default function Navbar() {
           {user ? (
             <div
               className="relative"
-              onMouseEnter={() => setIsDropdownOpen(true)}
-              onMouseLeave={() => setIsDropdownOpen(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
-              <button className="hover:opacity-75 transition-opacity" title="User Menu">
+              <button
+                className="hover:opacity-75 transition-opacity"
+                title="User Menu"
+              >
                 <div className="w-8 h-8 rounded-full overflow-hidden">
                   {profilePicture ? (
                     <Image
@@ -178,7 +195,11 @@ export default function Navbar() {
                 </div>
               </button>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 z-50">
+                <div
+                  className="absolute right-0 mt-0 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 z-50"
+                  onMouseEnter={handleMouseEnter} // Keep open when hovering dropdown
+                  onMouseLeave={handleMouseLeave}
+                >
                   {dropdownItems.map((item) => (
                     <button
                       key={item.label}
