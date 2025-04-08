@@ -53,7 +53,7 @@ const HotelSearch = () => {
       const response = await fetch(`/api/hotels?${queryString}`);
       const data = await response.json();
       if (data.error) {
-        setError(data.error);
+        alert(data.error);
       } else {
         // Fetch coordinates for each hotel and update the list
         const hotelsWithCoordinates = await Promise.all(

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { Hotel, RoomType } from "@prisma/client";
 
-// Define the types for better clarity
 type HotelWithRooms = Hotel & { roomTypes: RoomType[]; images?: string[] };
 
 const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => {
@@ -13,8 +12,10 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [roomAvailability, setRoomAvailability] = useState<number[]>([]);
+  const [cart, setCart] = useState<RoomType[]>([]);
 
   const hotel_id = React.use(params)?.hotel_id;
+  const token = typeof window !== "undefined" ? localStorage.getItem("flynextToken") : null;
 
   // Fetch hotel details
   useEffect(() => {
@@ -33,8 +34,8 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
         } else {
           setHotel({
             ...data,
-            roomTypes: data.roomTypes || [], // Fallback to an empty array if roomTypes is missing
-            images: data.images || [], // Fallback to an empty array if images are missing
+            roomTypes: data.roomTypes || [],
+            images: data.images || [],
           });
         }
       } catch (err) {
@@ -51,8 +52,8 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
   // Check room availability for the selected date range
   const checkRoomAvailability = async () => {
     if (!checkIn || !checkOut) {
-      setError("Please select both check-in and check-out dates.");
-      return;
+      alert("Please select both check-in and check-out dates.");
+     
     }
 
     try {
@@ -83,6 +84,12 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
 
   return (
     <div className="max-w-4xl mx-auto py-10">
+
+      {/* Display Error Message */}
+    {error && (
+      <p className="text-red-500 mb-4">{error}</p>
+    )}
+
       {/* Hotel Information */}
       <h1 className="text-3xl font-bold mb-6">{hotel.name}</h1>
       <p>City: {hotel.city}</p>
@@ -97,7 +104,7 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
           hotel.images.map((image, index) => (
             <img
               key={index}
-              src={`/${image}`} // Ensure correct rendering with forward slashes
+              src={`/${image}`}
               alt={`Hotel Image ${index + 1}`}
               className="w-auto h-auto object-cover rounded mb-4"
             />
@@ -118,6 +125,44 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
               <p>Amenities: {JSON.stringify(room.amenities)}</p>
               <p>Price Per Night: ${room.pricePerNight.toString()}</p>
               <p>Available Rooms: {roomAvailability[index] || "N/A"}</p>
+              {/* Add to Cart Button */}
+              <button
+                disabled={!roomAvailability[index] || !token} // Disable if no availability
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`/api/booking/itinerary`, {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json", Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify({
+                        hotelId: hotel.id,
+                        roomTypeId: room.id,
+                        checkIn,
+                        checkOut,
+                      }),
+                    });
+
+                    if (!response.ok) {
+                      throw new Error("Failed to add room to cart");
+                    }
+
+                    const cartResponse = await response.json();
+                    setCart((prev) => [...prev, cartResponse]);
+                    alert("Room added to cart successfully!");
+                  } catch (err) {
+                    console.error(err);
+                    alert("Error adding room to cart.");
+                  }
+                }}
+                className={`bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded ${
+                  (!roomAvailability[index] || !token) ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              
+              >
+                Add to Cart
+              </button>
+
               {/* Room Images */}
               <div className="room-images mt-6">
                 {Array.isArray(room.images) ? (
@@ -144,7 +189,7 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
 
       {/* Date Selection and Availability Check */}
       <div className="availability-form mt-6 p-6 bg-gray-800 rounded">
-        <h2 className="text-2xl font-semibold mb-4">Check Room Availability</h2>
+        <h2 className="text-2xl text-white font-semibold mb-4">Check Room Availability</h2>
         <label htmlFor="checkIn" className="block mb-2 text-white">
           Check-In Date:
         </label>
