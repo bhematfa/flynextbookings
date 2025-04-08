@@ -75,9 +75,20 @@ export async function GET(request, { params }) {
 
     const hotelBookings = await prisma.hotelBooking.findMany({
       where: bookingFilter,
+      include: {
+        roomType: true, // Include the roomType relation
+      },
     });
 
-    return NextResponse.json({ hotelBookings });
+    // Add roomType name to the result for each booking
+    const formattedBookings = hotelBookings.map((booking) => ({
+      ...booking,
+      roomTypeName: booking.roomType?.name || "N/A", // Include roomType name
+    }));
+
+    return NextResponse.json({ hotelBookings: formattedBookings });
+    
+
   } catch (error) {
     console.log(error.stack);
     return NextResponse.json(
@@ -151,10 +162,11 @@ export async function PATCH(request, { params }) {
 
     return NextResponse.json(
       { message: "The Booking has been Cancelled." },
-      { status: 204 }
+      { status: 200 }
     );
+
   } catch (error) {
-    console.log(error.stack);
+    console.log(error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

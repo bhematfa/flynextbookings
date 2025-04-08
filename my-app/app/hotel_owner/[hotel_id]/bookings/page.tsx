@@ -37,6 +37,7 @@ const BookingList = ({
       );
       const data = await response.json();
 
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -57,7 +58,7 @@ const BookingList = ({
         body: JSON.stringify({ bookingId }),
       });
 
-      if (response.status === 204) {
+      if (response.status === 200) {
         setSuccessMessage("Booking has been cancelled.");
         fetchBookings(); 
       } else {
@@ -111,6 +112,7 @@ const BookingList = ({
               <p><strong>Check-In:</strong> {booking.checkIn}</p>
               <p><strong>Check-Out:</strong> {booking.checkOut}</p>
               <p><strong>Room Type:</strong> {booking.roomType?.name || "N/A"}</p>
+              <p><strong>Status: {booking.status} </strong></p>
             </div>
             <button
               onClick={() => cancelBooking(booking.id)}
