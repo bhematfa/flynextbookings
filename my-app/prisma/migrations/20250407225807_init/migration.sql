@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Hotel" ALTER COLUMN "logo" SET DATA TYPE TEXT;

@@ -1,13 +1,11 @@
-// app/invoice/InvoiceContent.tsx
 "use client";
-
 /*****************************************************
  * OpenAI. (2025). ChatGPT (Feb 06 version) [Large language model]. https://chatgpt.com
  *****************************************************/
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function InvoiceContent() {
+export default function InvoicePage() {
   const [pdfUrl, setPdfUrl] = useState("");
   const searchParams = useSearchParams();
 
