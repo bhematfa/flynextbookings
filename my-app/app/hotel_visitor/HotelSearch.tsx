@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Hotel, RoomType } from "@prisma/client";
@@ -32,7 +33,21 @@ const HotelSearch = () => {
     name: "",
     starRating: "",
     priceRange: "",
+    bookingId: "",
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setSearchParams(prev => ({
+        ...prev,
+        city: params.get("city") || "",
+        checkIn: params.get("checkIn") || "",
+        checkOut: params.get("checkOut") || "",
+        bookingId: params.get("bookingId") || "",
+      }));
+    }
+  }, []);
 
   const [hotels, setHotels] = useState<HotelWithRooms[]>([]);
   const [loading, setLoading] = useState(false);
@@ -112,18 +127,21 @@ const HotelSearch = () => {
             type="text"
             name="city"
             placeholder="City"
+            value={searchParams.city}
             onChange={handleChange}
             className="w-full p-3 rounded text-black dark:text-white bg-white dark:bg-gray-700"
           />
           <input
             type="date"
             name="checkIn"
+            value={searchParams.checkIn}
             onChange={handleChange}
             className="w-full p-3 rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
           <input
             type="date"
             name="checkOut"
+            value={searchParams.checkOut}
             onChange={handleChange}
             className="w-full p-3 rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
@@ -219,7 +237,13 @@ const HotelSearch = () => {
                   <span className="text-sm text-white">No Logo</span>
                 </div>
               )}
-              <Link href={`/hotel_visitor/${hotel.id}`}>
+              <Link
+                href={
+                  searchParams.bookingId
+                    ? `/hotel_visitor/${hotel.id}?checkIn=${searchParams.checkIn}&checkOut=${searchParams.checkOut}&bookingId=${searchParams.bookingId}`
+                    : `/hotel_visitor/${hotel.id}`
+                }
+              >
                 <button className="mt-4 bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded">
                   View Hotel Details
                 </button>

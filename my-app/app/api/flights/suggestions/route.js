@@ -38,7 +38,7 @@ export async function GET(request) {
     }
     const data = await res.json();
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

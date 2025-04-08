@@ -57,6 +57,7 @@ export default function FlightResultsPage() {
   const [checkOutDate, setCheckOutDate] = useState<string>("");
   const [selectedOutbound, setSelectedOutbound] = useState<FlightOption | null>(null);
   const [selectedReturn, setSelectedReturn] = useState<FlightOption | null>(null);
+  const [destinationCity, setDestinationCity] = useState<string>("");
 
   const token = typeof window !== "undefined" ? localStorage.getItem("flynextToken") : null;
 
@@ -93,6 +94,7 @@ export default function FlightResultsPage() {
 
           setCheckInDate(arrivalInCity);
           setCheckOutDate(departureFromCity);
+          setDestinationCity(city);
           fetchHotelSuggestions(city, arrivalInCity, departureFromCity);
         }
       } catch (err) {
@@ -122,9 +124,9 @@ export default function FlightResultsPage() {
   };
 
   const handleHotelSearch = (city: string, checkIn: string, checkOut: string) => {
-    const flightParams = searchParams.toString();
+    //const flightParams = searchParams.toString();
     router.push(
-      `/hotel-search?city=${encodeURIComponent(city)}&checkIn=${checkIn}&checkOut=${checkOut}&${flightParams}`
+      `/hotel_visitor?city=${encodeURIComponent(city)}&checkIn=${checkIn}&checkOut=${checkOut}}`
     );
   };
 
@@ -168,10 +170,63 @@ export default function FlightResultsPage() {
         }
       );
       if (response.status === 200) {
-        alert("Added to cart. View in My Bookings/Cart.");
+        alert("Added to cart. View in cart.");
+        //const bookingId = response.data.bookingId;
+        //localStorage.setItem("bookingId", bookingId);
         setSelectedOutbound(null);
         setSelectedReturn(null);
         setPassportNumber("");
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.error || err.response?.data?.message || "Failed to add to cart");
+    }
+  };
+
+  const addToCartAndViewHotels = async () => {
+    // Validate passport number
+    if (!passportNumber) {
+      alert("Please enter your passport number");
+      return;
+    }
+
+    // Check if passport is 9 digits and only numbers
+    const passportRegex = /^\d{9}$/;
+    if (!passportRegex.test(passportNumber)) {
+      alert("Passport number must be exactly 9 digits and contain only numbers");
+      return;
+    }
+
+    if (!selectedOutbound || (type === "round" && !selectedReturn)) {
+      alert("Please select all required flights");
+      return;
+    }
+
+    const flightIds = [
+      ...(selectedOutbound?.flights.map((f) => f.id) || []),
+      ...(type === "round" && selectedReturn ? selectedReturn.flights.map((f) => f.id) : []),
+    ];
+
+    try {
+      console.log("Adding to cart and navigating to hotels:", flightIds, passportNumber);
+      const response = await axios.post(
+        "/api/booking/itinerary",
+        {
+          flightIds,
+          passportNumber,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        const bookingId = response.data.booking.id;
+        //localStorage.setItem("bookingId", bookingId);
+        router.push(
+          `/hotel_visitor?city=${encodeURIComponent(destinationCity)}&checkIn=${checkInDate}&checkOut=${checkOutDate}&bookingId=${bookingId}`
+        );
       }
     } catch (err: any) {
       alert(err.response?.data?.error || err.response?.data?.message || "Failed to add to cart");
@@ -301,7 +356,7 @@ export default function FlightResultsPage() {
             )}
 
             {token && (
-              <div className="mt-6">
+              <div className="mt-6 flex gap-4">
                 <button
                   onClick={addToCart}
                   disabled={!isAddToCartEnabled}
@@ -312,6 +367,17 @@ export default function FlightResultsPage() {
                   }`}
                 >
                   Add to Cart
+                </button>
+                <button
+                  onClick={addToCartAndViewHotels}
+                  disabled={!isAddToCartEnabled}
+                  className={`py-2 px-4 rounded-md transition ${
+                    isAddToCartEnabled
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-gray-400 text-gray-700 cursor-not-allowed"
+                  }`}
+                >
+                  Add to Cart and view hotel suggestions
                 </button>
               </div>
             )}

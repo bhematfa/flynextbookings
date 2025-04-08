@@ -17,6 +17,7 @@ export default function CheckoutContent() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cvv, setCvv] = useState("");
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("flynextToken") : null;
@@ -44,8 +45,20 @@ export default function CheckoutContent() {
       setError("No booking ID found");
       return;
     }
-    if (!cardNumber || !expiry || !nameOnCard) {
+    if (!cardNumber || !expiry || !nameOnCard || !cvv) {
       setError("Please fill out all fields");
+      return;
+    }
+    if (cardNumber.length !== 16) {
+      setError("Card number must be 16 digits");
+      return;
+    }
+    if (cvv.length !== 3) {
+      setError("CVV must be 3 digits");
+      return;
+    }
+    if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+      setError("Expiry date must be in MM/YY format");
       return;
     }
 
@@ -125,7 +138,20 @@ export default function CheckoutContent() {
                 value={cardNumber}
                 onChange={(e) => setCardNumber(e.target.value)}
                 className="w-full border px-3 py-2 dark:text-gray-900"
-                placeholder="1234 5678 9876 5432"
+                placeholder="1234567898765432"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block font-semibold mb-1">CVV</label>
+              <input
+                type="text"
+                value={cvv}
+                onChange={(e) => setCvv(e.target.value)}
+                maxLength={3}
+                minLength={3}
+                pattern="\d{3}"
+                className="w-full border px-3 py-2 dark:text-gray-900"
+                placeholder="123"
               />
             </div>
 
