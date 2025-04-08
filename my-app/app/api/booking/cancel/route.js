@@ -52,10 +52,51 @@ export async function POST(request) {
       );
     }
     if (!hotelBookingId && !flightBookingId) {
-      return NextResponse.json(
-        { error: "You need to cancel at least one booking" },
-        { status: 400 }
-      );
+      let booking = await prisma.booking.findUnique({
+        where: { id: bookingId },
+      });
+      if (!booking) {
+        return NextResponse.json(
+          { error: "Booking not found" },
+          { status: 404 }
+        );
+      }
+      if (booking.status === "CANCELLED") {
+        return NextResponse.json(
+          { error: "Booking already cancelled" },
+          { status: 400 }
+        );
+      }
+      if (booking.userId !== user.userId) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      booking = await prisma.update({
+        where: { id: bookingId },
+        data: { status: "CANCELLED" },
+      });
+      if (!booking) {
+        return NextResponse.json(
+          { error: "Booking not found" },
+          { status: 404 }
+        );
+      }
+      if (user.userId) {
+        const notifyRes = await fetch(notificationsUrl.toString(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `Your booking # ${bookingId} has been cancelled.`,
+            uid: user.userId,
+          }),
+        });
+        if (!notifyRes || notifyRes.error) {
+          return NextResponse.json({ error: notifyRes.error }, { status: 404 });
+        }
+      }
+      return NextResponse.json({
+        message: "Booking cancelled",
+        booking,
+      });
     }
     const requester = await prisma.user.findUnique({
       where: { id: user.userId },
