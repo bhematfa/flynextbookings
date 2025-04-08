@@ -175,7 +175,7 @@ export default function MyBookingsPage() {
     }
   }
 
-  async function cancelBooking(bookingId: string) {
+  async function cancelBooking(bookingId: string, hotelBookingId?: string | null, flightBookingId?: string | null) {
     try {
       const res = await fetch("/api/booking/cancel", {
         method: "POST",
@@ -183,7 +183,7 @@ export default function MyBookingsPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ bookingId }),
+        body: JSON.stringify({ bookingId, hotelBookingId, flightBookingId }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -331,7 +331,7 @@ return (
                                         Go to Checkout
                                     </button>
                                     <button
-                                        onClick={() => cancelBooking(b.id)}
+                                        onClick={() => cancelBooking(b.id, b.hotelBookingId, b.flightBookingId)}
                                         className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                                     >
                                         Cancel Booking
@@ -341,7 +341,7 @@ return (
                             {b.status === "CONFIRMED" && (
                                 <>
                                     <button
-                                        onClick={() => cancelBooking(b.id)}
+                                        onClick={() => cancelBooking(b.id, b.hotelBookingId, b.flightBookingId)}
                                         className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                                     >
                                         Cancel Booking
