@@ -83,7 +83,7 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
 
   // Check room availability for the selected date range
   const checkRoomAvailability = async () => {
-    if (!checkIn || !checkOut) {
+    if ((!checkIn && !checkInParam) || (!checkOut) && !checkOutParam) {
       alert("Please select both check-in and check-out dates.");
       return;
     }
@@ -91,11 +91,17 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
       alert("Check-out date must be after check-in date.");
       return;
     }
+    if (checkInParam) {
+      setCheckIn(checkInParam);
+    }
+    if (checkOutParam) {
+      setCheckOut(checkOutParam);
+    }
 
     try {
       const availabilityPromises = hotel?.roomTypes?.map(async (room) => {
         const response = await fetch(
-          `/api/hotels/rooms/${room.id}?startDate=${checkIn}&endDate=${checkOut}`,
+          `/api/hotels/rooms/${room.id}?startDate=${checkInParam || checkIn}&endDate=${checkOutParam || checkOut}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
