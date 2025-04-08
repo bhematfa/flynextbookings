@@ -1,3 +1,7 @@
+/*****************************************************
+ * OpenAI. (2025). ChatGPT (Feb 06 version) [Large language model]. https://chatgpt.com
+ *****************************************************/
+
 "use client";
 
 import { useState } from "react";

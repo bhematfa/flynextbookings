@@ -1,6 +1,9 @@
 // app/checkout/CheckoutContent.tsx
 "use client";
 
+/*****************************************************
+ * OpenAI. (2025). ChatGPT (Feb 06 version) [Large language model]. https://chatgpt.com
+ *****************************************************/
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 

@@ -1,5 +1,8 @@
 "use client";
 
+/*****************************************************
+ * OpenAI. (2025). ChatGPT (Feb 06 version) [Large language model]. https://chatgpt.com
+ *****************************************************/
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
