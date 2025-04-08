@@ -50,8 +50,6 @@ export default function FlightResultsPage() {
   const [hotelLoading, setHotelLoading] = useState<boolean>(false);
   const [hotelError, setHotelError] = useState<string | null>(null);
   const [passportNumber, setPassportNumber] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null); // New state for success message
   const [checkInDate, setCheckInDate] = useState<string>("");
   const [checkOutDate, setCheckOutDate] = useState<string>("");
   const [selectedOutbound, setSelectedOutbound] = useState<FlightOption | null>(null);
@@ -96,7 +94,7 @@ export default function FlightResultsPage() {
         }
       } catch (err) {
         console.error("Error parsing results:", err);
-        setError("Failed to load flight results");
+        alert("Failed to load flight results");
       }
     }
   }, [searchParams, token]);
@@ -128,12 +126,21 @@ export default function FlightResultsPage() {
   };
 
   const addToCart = async () => {
+    // Validate passport number
     if (!passportNumber) {
-      setError("Please enter your passport number");
+      alert("Please enter your passport number");
       return;
     }
+
+    // Check if passport is 9 digits and only numbers
+    const passportRegex = /^\d{9}$/;
+    if (!passportRegex.test(passportNumber)) {
+      alert("Passport number must be exactly 9 digits and contain only numbers");
+      return;
+    }
+
     if (!selectedOutbound || (type === "round" && !selectedReturn)) {
-      setError("Please select all required flights");
+      alert("Please select all required flights");
       return;
     }
 
@@ -158,18 +165,13 @@ export default function FlightResultsPage() {
         }
       );
       if (response.status === 200) {
-        setSuccessMessage("Added to cart. View in My Bookings/Cart.");
-        setError(null);
-        // Reset selections after success
+        alert("Added to cart. View in My Bookings/Cart.");
         setSelectedOutbound(null);
         setSelectedReturn(null);
         setPassportNumber("");
-        // Clear success message after 5 seconds
-        setTimeout(() => setSuccessMessage(null), 5000);
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || err.response?.data?.message || "Failed to add to cart");
-      setSuccessMessage(null);
+      alert(err.response?.data?.error || err.response?.data?.message || "Failed to add to cart");
     }
   };
 
@@ -178,10 +180,6 @@ export default function FlightResultsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
       <div className="container mx-auto">
-        {error && <div className="text-red-600 dark:text-red-400 mb-4">{error}</div>}
-        {successMessage && (
-          <div className="text-green-600 dark:text-green-400 mb-4">{successMessage}</div>
-        )}
         {results.length > 0 ? (
           <>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">
@@ -197,7 +195,8 @@ export default function FlightResultsPage() {
                   value={passportNumber}
                   onChange={(e) => setPassportNumber(e.target.value)}
                   className="w-full max-w-xs border px-3 py-2 rounded dark:text-gray-900"
-                  placeholder="Enter your passport number"
+                  placeholder="Enter 9-digit passport number"
+                  maxLength={9}
                 />
               </div>
             )}
