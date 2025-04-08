@@ -52,6 +52,7 @@ const HotelSearch = () => {
     try {
       const response = await fetch(`/api/hotels?${queryString}`);
       const data = await response.json();
+      console.log("Fetched hotels:", data); // Debugging log
       if (data.error) {
         alert(data.error);
       } else {
@@ -74,14 +75,17 @@ const HotelSearch = () => {
 
   // Geocoding function to fetch coordinates using Nominatim
   async function getCoordinates(address: string) {
+    console.log("Fetching coordinates for address:", address); // Debugging log
+    const cleanedAddress = address.replace(/,/g, "");
     if (typeof window === "undefined") return null; // Ensure `window` is available
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cleanedAddress)}&format=json&limit=1`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch coordinates from Nominatim API");
       }
       const data = await response.json();
+      console.log("Fetched coordinates:", data); // Debugging log
       if (data.length > 0) {
         const { lat, lon } = data[0]; // Extract latitude and longitude
         return { latitude: parseFloat(lat), longitude: parseFloat(lon) };
@@ -161,7 +165,7 @@ const HotelSearch = () => {
           <h3 className="text-2xl font-bold text-black dark:text-white mb-4">Hotel Map</h3>
           <MapContainer
             center={
-              hotels.length > 0
+              hotels.length > 0 && hotels[0].location
                 ? [hotels[0].location.latitude, hotels[0].location.longitude]
                 : [0, 0] // Dynamically set the default center
             }
@@ -203,6 +207,18 @@ const HotelSearch = () => {
                   ? hotel.roomTypes[0].pricePerNight.toString()
                   : "Not Available"}
               </p>
+              {/* Hotel Logo */}
+              {hotel.logo ? (
+                <img
+                  src={hotel.logo}
+                  alt={`${hotel.name} logo`}
+                  className="w-12 h-12 object-cover rounded-full"
+                />
+              ) : (
+                <div className="w-12 h-12 bg-gray-600 flex items-center justify-center rounded-full">
+                  <span className="text-sm text-white">No Logo</span>
+                </div>
+              )}
               <Link href={`/hotel_visitor/${hotel.id}`}>
                 <button className="mt-4 bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded">
                   View Hotel Details
