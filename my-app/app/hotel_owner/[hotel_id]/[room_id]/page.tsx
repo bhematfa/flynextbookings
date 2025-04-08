@@ -99,7 +99,7 @@ const RoomDetails = ({
 
       {/* Date Selection and Availability Check */}
       <div className="availability-form mt-6 p-6 bg-gray-800 rounded">
-        <h2 className="text-2xl font-semibold mb-4">Check Room Availability</h2>
+        <h2 className="text-2xl text-white font-semibold mb-4">Check Room Availability</h2>
         <label htmlFor="checkIn" className="block mb-2 text-white">
           Check-In Date:
         </label>
@@ -130,7 +130,7 @@ const RoomDetails = ({
 
       {/* Change Room Availability */}
       <div className="availability-form mt-6 p-6 bg-gray-800 rounded">
-        <h2 className="text-2xl font-semibold mb-4">Change Room Availability</h2>
+        <h2 className="text-2xl text-white font-semibold mb-4">Change Room Availability</h2>
         <label htmlFor="changeStartDate" className="block mb-2 text-white">
           Start Date:
         </label>
