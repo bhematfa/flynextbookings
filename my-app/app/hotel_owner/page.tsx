@@ -115,7 +115,7 @@ const CreateHotel = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-900 text-white">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
       <h1 className="text-3xl font-bold mb-6 text-center">Add a Hotel</h1>
       {error && <p className="text-red-500">{error}</p>}
       {successMessage && <p className="text-green-500">{successMessage}</p>}
@@ -206,7 +206,7 @@ const CreateHotel = () => {
       </form>
 
       {/* Display list of hotels owned by the user */}
-      <div className="bg-gray-800 p-6 rounded-lg space-y-4 mt-6 w-full max-w-md">
+      <div className="bg-gray-800 p-6 rounded-lg space-y-4 mt-6 w-full text-white max-w-md">
         <h2 className="text-2xl font-bold">Your Hotels</h2>
         {hotelList.length > 0 ? (
           hotelList.map((hotel) => (

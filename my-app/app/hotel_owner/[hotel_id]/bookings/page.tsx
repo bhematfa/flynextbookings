@@ -76,14 +76,14 @@ const BookingList = ({
   }, [date, roomType]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-gray-900 bg-white dark:bg-gray-900 text-black dark:text-white p-6">
       <h1 className="text-3xl font-bold mb-6">Booking List</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
 
       {/* Filters */}
       <div className="mb-6">
-        <label htmlFor="date" className="block text-white">Filter by Date:</label>
+        <label htmlFor="date" className="block text-black dark:text-white">Filter by Date:</label>
         <input
           type="date"
           id="date"
@@ -92,7 +92,7 @@ const BookingList = ({
           className="w-full p-3 rounded bg-gray-700 text-white mb-4"
         />
 
-        <label htmlFor="roomType" className="block text-white">Filter by Room Type:</label>
+        <label htmlFor="roomType" className="block text-black dark:text-white">Filter by Room Type:</label>
         <input
           type="text"
           id="roomType"

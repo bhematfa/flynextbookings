@@ -111,7 +111,7 @@ const ManageRoomTypes = ({ params }: { params: Promise<{ hotel_id: string }> }) 
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-900 text-white">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
       <Link
         href={`/hotel_visitor/${hotelId}`}
         className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded mb-4 mt-4"

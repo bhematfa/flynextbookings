@@ -99,10 +99,10 @@ const HotelSearch = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white  bg-white dark:bg-gray-800">
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto py-10">
-        <h2 className="text-3xl font-bold mb-4 text-center">Search for Hotels</h2>
+      <main className="max-w-4xl mx-auto py-10" >
+        <h2 className="text-3xl text-center text-black dark:text-white font-bold mb-4 ">Search for Hotels</h2>
         <form className="bg-gray-800 p-6 rounded-lg space-y-6">
           <input
             type="text"
@@ -158,7 +158,7 @@ const HotelSearch = () => {
 
         {/* Display Map with Hotel Pinpoints */}
         <div className="mt-10">
-          <h3 className="text-2xl font-bold mb-4">Hotel Map</h3>
+          <h3 className="text-2xl font-bold text-black dark:text-white mb-4">Hotel Map</h3>
           <MapContainer
             center={
               hotels.length > 0

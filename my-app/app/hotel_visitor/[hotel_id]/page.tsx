@@ -91,15 +91,15 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
     )}
 
       {/* Hotel Information */}
-      <h1 className="text-3xl font-bold mb-6">{hotel.name}</h1>
-      <p>City: {hotel.city}</p>
-      <p>Star Rating: {hotel.starRating}</p>
-      <p>Address: {hotel.address}</p>
-      <p>Location: {hotel.location}</p>
+      <h1 className="text-3xl text-black dark:text-white font-bold mb-6">{hotel.name}</h1>
+      <p className="text-black dark:text-white font-bold"> City: {hotel.city}</p>
+      <p className="text-black dark:text-white font-bold">Star Rating: {hotel.starRating}</p>
+      <p className="text-black dark:text-white font-bold">Address: {hotel.address}</p>
+      <p className="text-black dark:text-white font-bold">Location: {hotel.location}</p>
 
       {/* Hotel Images */}
       <div className="hotel-images mt-6">
-        <h2 className="text-2xl font-semibold">Hotel Images</h2>
+        <h2 className="text-2xl text-black dark:text-white font-semibold">Hotel Images</h2>
         {hotel.images && hotel.images.length > 0 ? (
           hotel.images.map((image, index) => (
             <img
@@ -116,15 +116,15 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
         )}
       </div>
 
-      <h2 className="text-2xl font-semibold mt-6">Room Types</h2>
+      <h2 className="text-2xl text-black dark:text-white font-semibold mt-6">Room Types</h2>
       <div>
         {hotel.roomTypes.length > 0 ? (
           hotel.roomTypes.map((room, index) => (
             <div key={`${room.name}-${room.pricePerNight}`} className="room-card border rounded p-4 mb-4">
-              <h3 className="text-xl font-semibold">{room.name}</h3>
-              <p>Amenities: {JSON.stringify(room.amenities)}</p>
-              <p>Price Per Night: ${room.pricePerNight.toString()}</p>
-              <p>Available Rooms: {roomAvailability[index] || "N/A"}</p>
+              <h3 className="text-xl text-black dark:text-white font-semibold">{room.name}</h3>
+              <p className="text-black dark:text-white font-bold">Amenities: {JSON.stringify(room.amenities)}</p>
+              <p className="text-black dark:text-white font-bold">Price Per Night: ${room.pricePerNight.toString()}</p>
+              <p className="text-black dark:text-white font-bold">Available Rooms: {roomAvailability[index] || "N/A"}</p>
               {/* Add to Cart Button */}
               <button
                 disabled={!roomAvailability[index] || !token} // Disable if no availability
