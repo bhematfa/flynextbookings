@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { parseAndVerifyToken } from "../../../../../utils/jwt.js";
 import axios from "axios";
-//import { findAvailability } from "../../../../../utils/availablehelp.js";
+import { setAvailability } from "@/utils/availablehelp.js";
 
 // As a hotel owner, I want to view and filter my hotel’s booking list by date and/or room type.
 export async function GET(request, { params }) {
@@ -152,6 +152,12 @@ export async function PATCH(request, { params }) {
       where: { id: booking.id },
       data: { status: "CANCELLED" },
     });
+
+    const room = await prisma.roomType.findUnique({
+      where: { id: booking.roomTypeId },
+    });
+
+    setAvailability(room.schedule, booking.checkIn, booking.checkOut, booking.roomIndexNumber, true);
 
     const { origin } = new URL(request.url);
     const notificationsUrl = new URL("/api/notifications", origin);
