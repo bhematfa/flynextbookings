@@ -160,7 +160,7 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
                 }`}
               
               >
-                Add to Cart
+                Add to Cart: Make sure you're logged in and have selected the check-in and check-out dates!
               </button>
 
               {/* Room Images */}
@@ -214,7 +214,7 @@ const HotelDetails = ({ params }: { params: Promise<{ hotel_id: string }> }) => 
           onClick={checkRoomAvailability}
           className="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded"
         >
-          Check Availability
+          Check Availability: These are your check-in and check-out dates!
         </button>
       </div>
     </div>
