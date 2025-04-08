@@ -25,36 +25,46 @@ interface FlightOption {
 }
 
 interface HotelSuggestion {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  starRating: number;
+  images: string[];
+  roomTypes: {
     id: string;
     name: string;
-    address: string;
-    city: string;
-    starRating: number;
+    amenities: string[];
+    pricePerNight: number;
     images: string[];
-    roomTypes: {
-      id: string;
-      name: string;
-      amenities: string[];
-      pricePerNight: number;
-      images: string[];
-      availability: number;
-    }[];
-  }
+    availability: number;
+  }[];
+}
 
-
-  
 export default function FlightResultsPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [results, setResults] = useState<FlightOption[][]>([]);
   const [type, setType] = useState<"one-way" | "round">("one-way");
   const [hotelSuggestions, setHotelSuggestions] = useState<HotelSuggestion[]>([]);
   const [hotelLoading, setHotelLoading] = useState<boolean>(false);
   const [hotelError, setHotelError] = useState<string | null>(null);
-  const router = useRouter();
+  const [passportNumber, setPassportNumber] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); // New state for success message
   const [checkInDate, setCheckInDate] = useState<string>("");
   const [checkOutDate, setCheckOutDate] = useState<string>("");
+  const [selectedOutbound, setSelectedOutbound] = useState<FlightOption | null>(null);
+  const [selectedReturn, setSelectedReturn] = useState<FlightOption | null>(null);
+
+  const token = typeof window !== "undefined" ? localStorage.getItem("flynextToken") : null;
 
   useEffect(() => {
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
     const resultsParam = sessionStorage.getItem("flightResults");
     const typeParam = searchParams.get("type") as "one-way" | "round";
 
@@ -64,33 +74,32 @@ export default function FlightResultsPage() {
         setResults(parsedResults);
         setType(typeParam || "one-way");
 
-        if (localStorage.getItem("flynextToken") && parsedResults.length > 0 && parsedResults[0].length > 0) {
-            const firstOption = parsedResults[0][0];
-            const lastOutboundFlight = firstOption.flights[firstOption.flights.length - 1];
-            const city = lastOutboundFlight.destination.city;
-            const arrivalInCity = lastOutboundFlight.arrivalTime.split("T")[0];
-            const departureFromCity =
-              type === "round" && parsedResults[1]?.[0]?.flights[0]
-                ? parsedResults[1][0].flights[0].departureTime.split("T")[0]
-                : new Date(
-                    new Date(lastOutboundFlight.arrivalTime).setDate(
-                      new Date(lastOutboundFlight.arrivalTime).getDate() + 3
-                    )
+        if (parsedResults.length > 0 && parsedResults[0].length > 0) {
+          const firstOption = parsedResults[0][0];
+          const lastOutboundFlight = firstOption.flights[firstOption.flights.length - 1];
+          const city = lastOutboundFlight.destination.city;
+          const arrivalInCity = lastOutboundFlight.arrivalTime.split("T")[0];
+          const departureFromCity =
+            type === "round" && parsedResults[1]?.[0]?.flights[0]
+              ? parsedResults[1][0].flights[0].departureTime.split("T")[0]
+              : new Date(
+                  new Date(lastOutboundFlight.arrivalTime).setDate(
+                    new Date(lastOutboundFlight.arrivalTime).getDate() + 3
                   )
-                    .toISOString()
-                    .split("T")[0];
-  
-            setCheckInDate(arrivalInCity);
-            setCheckOutDate(departureFromCity);
-            fetchHotelSuggestions(city, arrivalInCity, departureFromCity);
+                )
+                  .toISOString()
+                  .split("T")[0];
 
+          setCheckInDate(arrivalInCity);
+          setCheckOutDate(departureFromCity);
+          fetchHotelSuggestions(city, arrivalInCity, departureFromCity);
         }
-
       } catch (err) {
         console.error("Error parsing results:", err);
+        setError("Failed to load flight results");
       }
     }
-  }, [searchParams]);
+  }, [searchParams, token]);
 
   const fetchHotelSuggestions = async (
     city: string,
@@ -118,24 +127,89 @@ export default function FlightResultsPage() {
     );
   };
 
-  
+  const addToCart = async () => {
+    if (!passportNumber) {
+      setError("Please enter your passport number");
+      return;
+    }
+    if (!selectedOutbound || (type === "round" && !selectedReturn)) {
+      setError("Please select all required flights");
+      return;
+    }
+
+    const flightIds = [
+      ...(selectedOutbound?.flights.map((f) => f.id) || []),
+      ...(type === "round" && selectedReturn ? selectedReturn.flights.map((f) => f.id) : []),
+    ];
+
+    try {
+      console.log("Adding to cart:", flightIds, passportNumber);
+      const response = await axios.post(
+        "/api/booking/itinerary",
+        {
+          flightIds,
+          passportNumber,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        setSuccessMessage("Added to cart. View in My Bookings/Cart.");
+        setError(null);
+        // Reset selections after success
+        setSelectedOutbound(null);
+        setSelectedReturn(null);
+        setPassportNumber("");
+        // Clear success message after 5 seconds
+        setTimeout(() => setSuccessMessage(null), 5000);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.response?.data?.message || "Failed to add to cart");
+      setSuccessMessage(null);
+    }
+  };
+
+  const isAddToCartEnabled = type === "one-way" ? !!selectedOutbound : !!selectedOutbound && !!selectedReturn;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
       <div className="container mx-auto">
-        {(
+        {error && <div className="text-red-600 dark:text-red-400 mb-4">{error}</div>}
+        {successMessage && (
+          <div className="text-green-600 dark:text-green-400 mb-4">{successMessage}</div>
+        )}
+        {results.length > 0 ? (
           <>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">
               {type === "one-way" ? "Flight Results" : "Outbound Flights"}
             </h1>
+            {token && (
+              <div className="mb-6">
+                <label className="block font-semibold mb-1 text-gray-900 dark:text-gray-100">
+                  Passport Number
+                </label>
+                <input
+                  type="text"
+                  value={passportNumber}
+                  onChange={(e) => setPassportNumber(e.target.value)}
+                  className="w-full max-w-xs border px-3 py-2 rounded dark:text-gray-900"
+                  placeholder="Enter your passport number"
+                />
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-6">
               {results[0]?.map((option, idx) => (
                 <div
                   key={idx}
-                  className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition"
+                  className={`p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border ${
+                    selectedOutbound === option ? "border-green-500" : "border-gray-200 dark:border-gray-700"
+                  } hover:shadow-lg transition`}
                 >
                   {option.flights.map((flight) => (
-                    console.log(flight),
                     <div key={flight.id} className="mb-4 last:mb-0">
                       <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         ✈ {flight.airline.name} ({flight.flightNumber})
@@ -156,6 +230,18 @@ export default function FlightResultsPage() {
                       </p>
                     </div>
                   ))}
+                  {token && (
+                    <button
+                      onClick={() => setSelectedOutbound(option)}
+                      className={`mt-4 py-2 px-4 rounded-md transition ${
+                        selectedOutbound === option
+                          ? "bg-green-600 text-white hover:bg-green-700"
+                          : "bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500"
+                      }`}
+                    >
+                      {selectedOutbound === option ? "Selected" : "Select"}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -169,7 +255,9 @@ export default function FlightResultsPage() {
                   {results[1].map((option, idx) => (
                     <div
                       key={idx}
-                      className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition"
+                      className={`p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border ${
+                        selectedReturn === option ? "border-green-500" : "border-gray-200 dark:border-gray-700"
+                      } hover:shadow-lg transition`}
                     >
                       {option.flights.map((flight) => (
                         <div key={flight.id} className="mb-4 last:mb-0">
@@ -192,59 +280,88 @@ export default function FlightResultsPage() {
                           </p>
                         </div>
                       ))}
+                      {token && (
+                        <button
+                          onClick={() => setSelectedReturn(option)}
+                          className={`mt-4 py-2 px-4 rounded-md transition ${
+                            selectedReturn === option
+                              ? "bg-green-600 text-white hover:bg-green-700"
+                              : "bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500"
+                          }`}
+                        >
+                          {selectedReturn === option ? "Selected" : "Select"}
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
               </>
             )}
 
-            {localStorage.getItem("flynextToken") && (
-                <div className="mt-10">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                    Hotel Suggestions
-                    </h2>
-                    {hotelLoading ? (
-                    <p className="text-gray-700 dark:text-gray-300">Loading hotel suggestions...</p>
-                    ) : hotelError ? (
-                    <p className="text-red-600 dark:text-red-400">{hotelError}</p>
-                    ) : hotelSuggestions.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-6">
-                        {hotelSuggestions.map((hotel) => (
-                        <div
-                            key={hotel.id}
-                            className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition"
+            {token && (
+              <div className="mt-6">
+                <button
+                  onClick={addToCart}
+                  disabled={!isAddToCartEnabled}
+                  className={`py-2 px-4 rounded-md transition ${
+                    isAddToCartEnabled
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-gray-400 text-gray-700 cursor-not-allowed"
+                  }`}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            )}
+
+            {token && (
+              <div className="mt-10">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                  Hotel Suggestions
+                </h2>
+                {hotelLoading ? (
+                  <p className="text-gray-700 dark:text-gray-300">Loading hotel suggestions...</p>
+                ) : hotelError ? (
+                  <p className="text-red-600 dark:text-red-400">{hotelError}</p>
+                ) : hotelSuggestions.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-6">
+                    {hotelSuggestions.map((hotel) => (
+                      <div
+                        key={hotel.id}
+                        className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition"
+                      >
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                          {hotel.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {hotel.address}, {hotel.city}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          ⭐ {hotel.starRating} stars
+                        </p>
+                        <button
+                          onClick={() =>
+                            handleHotelSearch(
+                              hotel.city,
+                              checkInDate,
+                              checkOutDate
+                            )
+                          }
+                          className="mt-4 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                         >
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                            {hotel.name}
-                            </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {hotel.address}, {hotel.city}
-                            </p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                            ⭐ {hotel.starRating} stars
-                            </p>
-                            <button
-                            onClick={() =>
-                                handleHotelSearch(
-                                hotel.city,
-                                checkInDate,
-                                checkOutDate
-                                )
-                            }
-                            className="mt-4 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                            >
-                            View Rooms
-                            </button>
-                        </div>
-                        ))}
-                    </div>
-                    ) : (
-                    <p className="text-gray-700 dark:text-gray-300">No hotel suggestions available.</p>
-                    )}
-                </div>
-            )
-            }
+                          View Rooms
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-700 dark:text-gray-300">No hotel suggestions available.</p>
+                )}
+              </div>
+            )}
           </>
+        ) : (
+          <p className="text-gray-700 dark:text-gray-300">No flight results found.</p>
         )}
       </div>
     </div>

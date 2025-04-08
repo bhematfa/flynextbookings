@@ -3,13 +3,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Hotel, Plane, LogIn, LogOut, UserPlus, User, Bell } from "lucide-react";
-import { parseAndVerifyToken, verifyToken } from "@/utils/jwt";
-import DarkModeToggle from "./darkmodetoggle";
-import { log } from "console";
+import { Hotel, Plane, LogIn, LogOut, UserPlus, User, Bell, ShoppingCart, BookOpen } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
+import DarkModeToggle from "./darkmodetoggle";
 import { JwtPayload } from "jwt-decode";
-
 
 interface CustomJwtPayload extends JwtPayload {
   userId: string;
@@ -21,25 +18,18 @@ export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<CustomJwtPayload | null>(null);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  const fallbackImage = "/avatar.png"; // Generic fallback in public/
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Dropdown state
+  const fallbackImage = "/avatar.png";
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Dropdown menu items
+  // Updated dropdown menu items with "My Bookings" and "Cart"
   const dropdownItems = [
     { label: "Profile", icon: <User className="h-4 w-4" />, path: "/profile" },
-    {
-      label: "Notifications",
-      icon: <Bell className="h-4 w-4" />,
-      path: "/notifications",
-    },
-    {
-      label: "Hotel Owner Page",
-      icon: <Hotel className="h-4 w-4" />,
-      path: "/hotel_owner",
-    },
+    { label: "Notifications", icon: <Bell className="h-4 w-4" />, path: "/notifications" },
+    { label: "My Bookings", icon: <BookOpen className="h-4 w-4" />, path: "/mybookings" },
+    { label: "Cart", icon: <ShoppingCart className="h-4 w-4" />, path: "/cart" },
+    { label: "Hotel Owner Page", icon: <Hotel className="h-4 w-4" />, path: "/hotel_owner" },
   ];
 
-  // Load user from token
   const loadUser = () => {
     const token = localStorage.getItem("flynextToken");
     if (token) {
@@ -57,7 +47,6 @@ export default function Navbar() {
     }
   };
 
-  // Fetch profile picture when user is authenticated
   const fetchProfilePicture = async () => {
     const token = localStorage.getItem("flynextToken");
     if (!token) {
@@ -68,14 +57,12 @@ export default function Navbar() {
     try {
       const response = await fetch("/api/auth/profilePicture", {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
         const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob); // Create a local URL for the image
+        const imageUrl = URL.createObjectURL(blob);
         setProfilePicture(imageUrl);
       } else {
         console.log("Failed to fetch profile picture:", response.statusText);
@@ -113,17 +100,13 @@ export default function Navbar() {
       window.removeEventListener("userLoggedIn", handleLogin);
       window.removeEventListener("userLoggedOut", handleLogout);
       window.removeEventListener("profilePictureUpdated", handleProfileUpdate);
-      if (profilePicture) URL.revokeObjectURL(profilePicture) // Clean up the object URL
+      if (profilePicture) URL.revokeObjectURL(profilePicture);
     };
   }, []);
 
-  // Fetch profile picture when user changes
   useEffect(() => {
-    if (user) {
-      fetchProfilePicture();
-    } else {
-      setProfilePicture(null);
-    }
+    if (user) fetchProfilePicture();
+    else setProfilePicture(null);
   }, [user]);
 
   const handleLogoutClick = () => {
@@ -133,8 +116,6 @@ export default function Navbar() {
     window.dispatchEvent(new Event("userLoggedOut"));
     router.push("/");
   };
-  
-  
 
   return (
     <nav className="w-full py-4 bg-white dark:bg-gray-900 shadow-md fixed top-0 z-50">
@@ -168,64 +149,59 @@ export default function Navbar() {
         {/* Right: Auth Actions and Dark Mode Toggle */}
         <div className="flex-1 flex justify-end items-center space-x-4">
           {user ? (
-            <>
-                <div
-                className="relative"
-                onMouseEnter={() => setIsDropdownOpen(true)}
-                onMouseLeave={() => setIsDropdownOpen(false)}
-              >
-                <button
-                  className="hover:opacity-75 transition-opacity"
-                  title="User Menu"
-                >
-                  <div className="w-8 h-8 rounded-full overflow-hidden">
-                    {profilePicture ? (
-                      <Image
-                        src={profilePicture}
-                        alt="User Profile"
-                        width={32}
-                        height={32}
-                        className="object-cover w-full h-full"
-                        onError={(e) => (e.currentTarget.src = fallbackImage)}
-                      />
-                    ) : (
-                      <Image
-                        src={fallbackImage}
-                        alt="Fallback Profile"
-                        width={32}
-                        height={32}
-                        className="object-cover w-full h-full"
-                        onError={(e) => (e.currentTarget.src = "/avatar.png")}
-                      />
-                    )}
-                  </div>
-                </button>
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 z-50">
-                    {dropdownItems.map((item) => (
-                      <button
-                        key={item.label}
-                        onClick={() => {
-                          router.push(item.path);
-                          setIsDropdownOpen(false);
-                        }}
-                        className="flex items-center w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        {item.icon}
-                        <span className="ml-2">{item.label}</span>
-                      </button>
-                    ))}
+            <div
+              className="relative"
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
+            >
+              <button className="hover:opacity-75 transition-opacity" title="User Menu">
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  {profilePicture ? (
+                    <Image
+                      src={profilePicture}
+                      alt="User Profile"
+                      width={32}
+                      height={32}
+                      className="object-cover w-full h-full"
+                      onError={(e) => (e.currentTarget.src = fallbackImage)}
+                    />
+                  ) : (
+                    <Image
+                      src={fallbackImage}
+                      alt="Fallback Profile"
+                      width={32}
+                      height={32}
+                      className="object-cover w-full h-full"
+                      onError={(e) => (e.currentTarget.src = "/avatar.png")}
+                    />
+                  )}
+                </div>
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 z-50">
+                  {dropdownItems.map((item) => (
                     <button
-                      onClick={handleLogoutClick}
+                      key={item.label}
+                      onClick={() => {
+                        router.push(item.path);
+                        setIsDropdownOpen(false);
+                      }}
                       className="flex items-center w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
-                      <LogOut className="h-4 w-4" />
-                      <span className="ml-2">Logout</span>
+                      {item.icon}
+                      <span className="ml-2">{item.label}</span>
                     </button>
-                  </div>
-                )}
-              </div>
-            </>
+                  ))}
+                  <button
+                    onClick={handleLogoutClick}
+                    className="flex items-center w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="ml-2">Logout</span>
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <button

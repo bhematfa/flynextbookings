@@ -60,7 +60,9 @@ export async function POST(request) {
           <h1>Booking Invoice</h1>
           <p><strong>Booking ID:</strong> ${booking.id}</p>
           <p><strong>Status:</strong> ${booking.status}</p>
-          <p><strong>Customer Name:</strong> ${booking.customerName}</p>
+          <p><strong>Customer Last Name:</strong> ${
+            booking.customerLastName
+          }</p>
           <p><strong>Customer Email:</strong> ${booking.customerEmail}</p>
           <p><strong>Booking Date:</strong> ${new Date(
             booking.createdAt
@@ -94,7 +96,7 @@ export async function POST(request) {
     if (flightBooking) {
       htmlContent += `
         <h2>Flight Details</h2>
-        <p><strong>Flight Number:</strong> ${flightBooking.reference}</p>
+        <p><strong>Flight Reference:</strong> ${flightBooking.reference}</p>
         <p><strong>Price:</strong> ${flightBooking.price}</p>
       `;
     }
