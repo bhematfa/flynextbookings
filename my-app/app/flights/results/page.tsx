@@ -41,6 +41,18 @@ interface HotelSuggestion {
   }[];
 }
 
+interface Booking {
+  id: string;
+  hotelBookingId?: string | null;
+  flightBookingId?: string | null;
+  hotelBooking?: {
+    hotelId: string;
+    roomTypeId: string;
+    checkIn: string;
+    checkOut: string;
+  };
+}
+
 export default function FlightResultsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -54,6 +66,8 @@ export default function FlightResultsPage() {
   const [checkOutDate, setCheckOutDate] = useState<string>("");
   const [selectedOutbound, setSelectedOutbound] = useState<FlightOption | null>(null);
   const [selectedReturn, setSelectedReturn] = useState<FlightOption | null>(null);
+  const [pendingBooking, setPendingBooking] = useState<Booking | null>(null);
+  const [bookingChoice, setBookingChoice] = useState<"new" | "patch">("new");
 
   const token = typeof window !== "undefined" ? localStorage.getItem("flynextToken") : null;
 
@@ -63,6 +77,7 @@ export default function FlightResultsPage() {
       return;
     }
 
+    // Fetch flight results
     const resultsParam = sessionStorage.getItem("flightResults");
     const typeParam = searchParams.get("type") as "one-way" | "round";
 
@@ -97,7 +112,29 @@ export default function FlightResultsPage() {
         alert("Failed to load flight results");
       }
     }
+
+    // Fetch pending booking
+    fetchPendingBooking();
   }, [searchParams, token]);
+
+  const fetchPendingBooking = async () => {
+    try {
+      const response = await axios.get("/api/booking/itinerary", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response.data;
+      if (data.booking && data.hotelBookingId && !data.flightBookingId) {
+        setPendingBooking(data.booking);
+      } else {
+        setPendingBooking(null);
+      }
+    } catch (err) {
+      console.error("Error fetching pending booking:", err);
+      setPendingBooking(null); // Silently fail if no pending booking
+    }
+  };
 
   const fetchHotelSuggestions = async (
     city: string,
@@ -126,13 +163,11 @@ export default function FlightResultsPage() {
   };
 
   const addToCart = async () => {
-    // Validate passport number
     if (!passportNumber) {
       alert("Please enter your passport number");
       return;
     }
 
-    // Check if passport is 9 digits and only numbers
     const passportRegex = /^\d{9}$/;
     if (!passportRegex.test(passportNumber)) {
       alert("Passport number must be exactly 9 digits and contain only numbers");
@@ -151,24 +186,36 @@ export default function FlightResultsPage() {
 
     try {
       console.log("Adding to cart:", flightIds, passportNumber);
-      const response = await axios.post(
-        "/api/booking/itinerary",
-        {
-          flightIds,
-          passportNumber,
-        },
-        {
+      const payload = { flightIds, passportNumber };
+      let response;
+
+      if (bookingChoice === "patch" && pendingBooking) {
+        response = await axios.patch(
+          "/api/booking/itinerary",
+          { ...payload, bookingId: pendingBooking.id },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } else {
+        response = await axios.post("/api/booking/itinerary", payload, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
-      );
+        });
+      }
+
       if (response.status === 200) {
         alert("Added to cart. View in My Bookings/Cart.");
         setSelectedOutbound(null);
         setSelectedReturn(null);
         setPassportNumber("");
+        setPendingBooking(null); // Reset after successful patch or post
+        setBookingChoice("new"); // Default back to new
       }
     } catch (err: any) {
       alert(err.response?.data?.error || err.response?.data?.message || "Failed to add to cart");
@@ -198,6 +245,35 @@ export default function FlightResultsPage() {
                   placeholder="Enter 9-digit passport number"
                   maxLength={9}
                 />
+              </div>
+            )}
+            {token && pendingBooking && (
+              <div className="mb-6">
+                <p className="text-gray-900 dark:text-gray-100 mb-2">
+                  You have a pending hotel-only booking (ID: {pendingBooking.id}). Would you like to:
+                </p>
+                <div className="flex gap-4">
+                  <label className="flex items-center text-gray-900 dark:text-gray-100">
+                    <input
+                      type="radio"
+                      value="patch"
+                      checked={bookingChoice === "patch"}
+                      onChange={() => setBookingChoice("patch")}
+                      className="mr-2"
+                    />
+                    Add flights to this booking
+                  </label>
+                  <label className="flex items-center text-gray-900 dark:text-gray-100">
+                    <input
+                      type="radio"
+                      value="new"
+                      checked={bookingChoice === "new"}
+                      onChange={() => setBookingChoice("new")}
+                      className="mr-2"
+                    />
+                    Create a new booking
+                  </label>
+                </div>
               </div>
             )}
             <div className="grid grid-cols-1 gap-6">
@@ -340,11 +416,7 @@ export default function FlightResultsPage() {
                         </p>
                         <button
                           onClick={() =>
-                            handleHotelSearch(
-                              hotel.city,
-                              checkInDate,
-                              checkOutDate
-                            )
+                            handleHotelSearch(hotel.city, checkInDate, checkOutDate)
                           }
                           className="mt-4 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                         >
