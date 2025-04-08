@@ -27,7 +27,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Hotel" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "logo" JSONB NOT NULL,
+    "logo" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "city" TEXT NOT NULL,
     "location" TEXT NOT NULL,

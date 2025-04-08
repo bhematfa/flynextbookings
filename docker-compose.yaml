@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: ./my-app  # Point to the subdirectory
+      dockerfile: Dockerfile
+    container_name: flynext-web
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - flynext-network
+  nginx:
+    image: nginx:alpine
+    container_name: flynext-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    networks:
+      - flynext-network
+networks:
+  flynext-network:
+    driver: bridge
