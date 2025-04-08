@@ -96,7 +96,7 @@ export async function POST(request) {
     if (flightBooking) {
       htmlContent += `
         <h2>Flight Details</h2>
-        <p><strong>Flight Number:</strong> ${flightBooking.reference}</p>
+        <p><strong>Flight Reference:</strong> ${flightBooking.reference}</p>
         <p><strong>Price:</strong> ${flightBooking.price}</p>
       `;
     }

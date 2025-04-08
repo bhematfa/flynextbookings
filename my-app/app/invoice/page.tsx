@@ -53,7 +53,7 @@ export default function InvoicePage() {
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h1>Booking Invoice</h1>
+      <h1 className="text-black dark:text-gray-100">Booking Invoice</h1>
       {pdfUrl ? (
         <iframe
           src={pdfUrl}
@@ -62,7 +62,7 @@ export default function InvoicePage() {
           title="Invoice PDF"
         />
       ) : (
-        <p>Loading or no invoice yet.</p>
+        <p className="text-black dark:text-gray-100">Loading or no invoice yet.</p>
       )}
     </div>
   );
