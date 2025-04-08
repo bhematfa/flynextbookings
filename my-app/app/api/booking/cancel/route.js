@@ -70,7 +70,7 @@ export async function POST(request) {
       if (booking.userId !== user.userId) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
-      booking = await prisma.update({
+      booking = await prisma.booking.update({
         where: { id: bookingId },
         data: { status: "CANCELLED" },
       });
