@@ -58,10 +58,10 @@ export default function FlightResultsPage() {
   const token = typeof window !== "undefined" ? localStorage.getItem("flynextToken") : null;
 
   useEffect(() => {
-    if (!token) {
-      router.push("/login");
-      return;
-    }
+    // if (!token) {
+    //   router.push("/login");
+    //   return;
+    // }
 
     const resultsParam = sessionStorage.getItem("flightResults");
     const typeParam = searchParams.get("type") as "one-way" | "round";
