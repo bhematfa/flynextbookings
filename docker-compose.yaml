@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile
     container_name: flynext-data-import
     volumes:
-      - .:/app
+      - ./my-app:/app/my-app
     env_file:
       - .env
     depends_on:
