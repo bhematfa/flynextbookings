@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { parseAndVerifyToken } from "@/utils/jwt.js";
 import { findAvailability } from "@/utils/availablehelp.js";
-//import axios from "axios";
+import axios from "axios";
 
 //As a hotel owner, I want to update the number of available rooms of each type in my hotel.
 //If availability decreases, it may require canceling some existing reservations.
