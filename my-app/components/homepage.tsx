@@ -25,7 +25,7 @@ const cards = [
 
 export default function Home() {
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 h-screen">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen w-full">
       {/* Main Content */}
       <div className="container flex flex-col justify-center items-center h-screen text-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mb-10">
